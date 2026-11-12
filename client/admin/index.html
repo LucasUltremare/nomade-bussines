@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Favicon inline (a marca): evita um request extra no primeiro paint.
+         Os ícones do app instalado são PNG e vivem no manifest. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- PWA — o cockpit instalado. scope e start_url apontam pra RAIZ porque é
+         lá que o PAINEL_URL abre o painel (o ai-service reescreve
+         / → /admin/). Ver client/admin/public/manifest.webmanifest. -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#fafaf8" />
+    <meta name="application-name" content="Nomade Business" />
+    <meta name="description" content="Nomade Business — sales, delivery and finance for a small company, in one place." />
+
+    <!-- iOS ignora o manifest pra ícone e barra de status: precisa destas. -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Nomade" />
+    <!-- default = barra de status com fundo próprio; com black-translucent o
+         conteúdo passaria por baixo do relógio. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- O painel é privado: nada daqui deve virar resultado de busca. -->
+    <meta name="robots" content="noindex, nofollow" />
+
+    <title>Nomade Business</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

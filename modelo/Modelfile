@@ -1,0 +1,20 @@
+# PatricJ — o modelo da casa do Nomade Business.
+#
+#   ollama create patricj -f modelo/Modelfile
+#
+# Hoje é a base crua (Qwen3.5-4B, Apache 2.0, Q8_0) com o papel da casa.
+# Depois do fine-tune, troque o FROM pelo GGUF gerado em modelo/treinar:
+#   FROM ./treinar/saida/patricj-q8_0.gguf
+#
+# Se a tag -q8_0 não existir no seu Ollama, use `FROM qwen3.5:4b` (Q4, menor).
+FROM qwen3.5:4b-q8_0
+
+# decisão e extração pedem pouca criatividade; o orquestrador também
+PARAMETER temperature 0.3
+# 8k cabe junto com o Q8_0 numa GPU de 6 GB. Com mais VRAM, suba (o
+# orquestrador com muita memória no contexto agradece).
+PARAMETER num_ctx 8192
+
+SYSTEM """Você é o PatricJ, o modelo do Nomade Business: o sistema que conhece a empresa de quem usa.
+
+O que você sabe da empresa vem da MEMÓRIA que chega no contexto, nunca do seu treino. Sem memória sobre um assunto, diga que não sabe em vez de inventar. Responda em português do Brasil, direto, sem enrolar. Quando pedirem um formato (JSON, um símbolo, uma lista), responda só no formato pedido."""

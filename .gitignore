@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+config/time.json
+.DS_Store
+*.log
+.migracao/
+
+# modelo: dados de treino, pesos e resultados ficam locais
+modelo/treinar/dados/*
+!modelo/treinar/dados/LEIAME.md
+modelo/treinar/saida/
+modelo/evals/resultados/

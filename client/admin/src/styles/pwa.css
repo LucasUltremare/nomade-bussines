@@ -1,0 +1,145 @@
+/* ═══════════════════════════════════════════════════════════
+   PWA — botão instalar, sheet, avisos e barra de atualização
+   Só tokens: nenhum hex literal fora de tokens.css.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── CTA na topbar ──────────────────────────────────────── */
+.pwa-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 30px; padding: 0 10px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  color: var(--accent-fg);
+  font-family: var(--body); font-size: var(--t-sm); font-weight: 500;
+  letter-spacing: var(--tr-tight);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+.pwa-cta:hover { background: var(--selected); border-color: var(--accent); }
+.pwa-cta:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Em tela estreita fica só o ícone — a topbar do celular já é disputada */
+@media (max-width: 560px) {
+  .pwa-cta { padding: 0 8px; }
+  .pwa-cta__txt { display: none; }
+}
+
+/* ─── Sheet: o que se ganha instalando ───────────────────── */
+.pwa-ganhos { list-style: none; margin: 0 0 var(--s-4); padding: 0; display: grid; gap: var(--s-3); }
+.pwa-ganhos li { display: grid; grid-template-columns: 22px 1fr; align-items: start; gap: var(--s-2); }
+.pwa-ganhos li > svg { margin-top: 2px; color: var(--accent-fg); }
+.pwa-ganhos b {
+  display: block;
+  font-size: var(--t-base); font-weight: 600; color: var(--ink);
+  letter-spacing: var(--tr-tight);
+}
+.pwa-ganhos span {
+  display: block;
+  font-size: var(--t-sm); color: var(--ink-mute); line-height: var(--lh-snug);
+}
+
+/* ─── Passo a passo do iOS ───────────────────────────────── */
+.pwa-ios {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  padding: var(--s-3);
+}
+.pwa-ios__head {
+  display: flex; align-items: center; gap: var(--s-2);
+  color: var(--ink-soft); font-size: var(--t-sm);
+  margin-bottom: var(--s-2);
+}
+.pwa-ios__head > svg { color: var(--accent-fg); flex-shrink: 0; }
+.pwa-ios ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.pwa-ios li { font-size: var(--t-base); color: var(--ink-soft); line-height: var(--lh-snug); }
+.pwa-ios li b { color: var(--ink); font-weight: 600; }
+
+.pwa-nota {
+  margin: var(--s-3) 0 0;
+  font-size: var(--t-sm); color: var(--ink-mute); line-height: var(--lh-base);
+}
+.pwa-sep { height: 1px; background: var(--line); margin: var(--s-4) 0; }
+
+/* ─── Linha de avisos (push) ─────────────────────────────── */
+.pwa-push {
+  display: flex; align-items: center; gap: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  padding: var(--s-3);
+}
+.pwa-push > svg { color: var(--accent-fg); flex-shrink: 0; }
+.pwa-push__txt { min-width: 0; flex: 1; }
+.pwa-push__txt b {
+  display: block;
+  font-size: var(--t-base); font-weight: 600; color: var(--ink);
+  letter-spacing: var(--tr-tight);
+}
+.pwa-push__txt span {
+  display: block;
+  font-size: var(--t-sm); color: var(--ink-mute); line-height: var(--lh-snug);
+}
+.pwa-push__acoes { display: flex; align-items: center; gap: var(--s-2); flex-shrink: 0; }
+.pwa-push__link {
+  border: none; background: none; padding: 0;
+  color: var(--ink-mute); font-family: var(--body); font-size: var(--t-sm);
+  text-decoration: underline; text-underline-offset: 3px;
+  cursor: pointer;
+}
+.pwa-push__link:hover { color: var(--ink-soft); }
+
+/* Dentro do dropdown do sino o espaço é curto: empilha */
+.pwa-push--compacto {
+  border: none; border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--surface);
+  padding: var(--s-3);
+  flex-wrap: wrap;
+}
+.pwa-push--compacto .pwa-push__acoes { width: 100%; justify-content: flex-end; }
+
+@media (max-width: 480px) {
+  .pwa-push { flex-wrap: wrap; }
+  .pwa-push__acoes { width: 100%; justify-content: flex-end; }
+}
+
+/* ─── Barra de nova versão ───────────────────────────────── */
+.pwa-update {
+  position: fixed;
+  left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--s-4) + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-dropdown); /* abaixo de modal (--z-dialog): não pode tapar diálogo aberto */
+  display: flex; align-items: center; gap: var(--s-2);
+  max-width: calc(100vw - var(--s-8));
+  padding: 9px 9px 9px var(--s-3);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-full);
+  background: var(--surface);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .5);
+  font-size: var(--t-sm); color: var(--ink-soft);
+}
+.pwa-update > svg { color: var(--accent-fg); flex-shrink: 0; }
+.pwa-update > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pwa-update__btn {
+  border: none; border-radius: var(--r-full);
+  background: var(--accent); color: var(--ink-invert);
+  padding: 5px 12px;
+  font-family: var(--body); font-size: var(--t-sm); font-weight: 600;
+  cursor: pointer; flex-shrink: 0;
+}
+.pwa-update__btn:hover { background: var(--accent-hover); }
+.pwa-update__x {
+  display: grid; place-items: center;
+  width: 24px; height: 24px; flex-shrink: 0;
+  border: none; background: none; color: var(--ink-faint);
+  border-radius: var(--r-full); cursor: pointer;
+}
+.pwa-update__x:hover { color: var(--ink-soft); background: var(--hover); }
+
+/* No celular a barra de tabs come o rodapé — sobe a barra pra cima dela */
+@media (max-width: 900px) {
+  .pwa-update { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+}

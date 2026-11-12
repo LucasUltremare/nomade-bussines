@@ -1,0 +1,29 @@
+# Linux — systemd de USUÁRIO (não root: o runner precisa do login do Claude
+# Code e das chaves SSH do teu usuário, que não existem no root).
+#
+#   mkdir -p ~/.config/systemd/user
+#   cp nomade-runner.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now nomade-runner
+#   systemctl --user status nomade-runner     # ver
+#   journalctl --user -u nomade-runner -f     # log ao vivo
+#
+# Pra sobreviver ao logout (servidor sem sessão gráfica):
+#   sudo loginctl enable-linger $USER
+
+[Unit]
+Description=Nomade Business — runner de agents
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.nvm/versions/node/current/bin/nomade runner
+# ↑ se o node não veio do nvm, troca por: /usr/bin/env nomade runner
+Restart=always
+RestartSec=15
+# o runner morre de fome sem PATH: systemd não herda o teu shell
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+WorkingDirectory=%h
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,228 @@
+/* ═══════════════════════════════════════════════════════════
+   NOMADE BUSINESS — TOKENS
+   Direção: "ledger" — monocromático, claro por padrão, denso.
+   Preto quase puro e branco; hairlines a 8%; números tabulares;
+   cor SÓ com significado (verde/âmbar/vermelho de estado).
+   Geist em tudo (UI, títulos, números) e Geist Mono nos metadados.
+
+   REGRA: nenhum hex literal fora deste arquivo.
+   Os nomes legados (--bg, --blue, --teal, --coral…) continuam
+   existindo e apontam pra escala nova: as páginas antigas herdam
+   o redesign sem serem tocadas.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── Tipografia ─────────────────────────────────────── */
+  --heading: 'Geist', -apple-system, 'Segoe UI', sans-serif;
+  --body: 'Geist', -apple-system, 'Segoe UI', sans-serif;
+  --display: 'Geist', -apple-system, 'Segoe UI', sans-serif;
+  --wordmark: 'Geist', -apple-system, sans-serif;
+  --mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --t-2xs: 10px;
+  --t-xs: 11px;
+  --t-sm: 12px;
+  --t-base: 13.5px;
+  --t-md: 14.5px;
+  --t-lg: 16px;
+  --t-xl: 20px;
+  --t-2xl: 26px;
+  --t-3xl: 34px;
+  --t-4xl: 44px;
+
+  --lh-tight: 1.1;
+  --lh-snug: 1.35;
+  --lh-base: 1.55;
+
+  --tr-display: -0.022em;
+  --tr-tight: -0.012em;
+  --tr-mono: 0.08em;
+
+  /* ─── Espaçamento ────────────────────────────────────── */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px;
+  --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 48px; --s-16: 64px;
+
+  /* ─── Raio ───────────────────────────────────────────── */
+  --r-xs: 5px; --r-sm: 7px; --r-md: 10px; --r-lg: 14px; --r-xl: 18px; --r-full: 999px;
+
+  /* ─── Movimento ──────────────────────────────────────── */
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --fast: .12s; --base: .2s; --slow: .34s;
+
+  /* ─── Superfícies — escuro (padrão) ──────────────────── */
+  --canvas: #0a0a0b;
+  --panel: #0d0d0f;
+  --surface: #131315;
+  --surface-2: #18181b;
+  --surface-3: #1e1e22;
+  --overlay: rgba(0, 0, 0, .6);
+
+  /* ─── Texto ──────────────────────────────────────────── */
+  --ink: #f4f4f2;
+  --ink-soft: rgba(244, 244, 242, .7);
+  --ink-mute: rgba(244, 244, 242, .52);
+  --ink-faint: rgba(244, 244, 242, .32);
+  --ink-ghost: rgba(244, 244, 242, .12);
+  --ink-invert: #0a0a0b;
+
+  /* ─── Linhas ─────────────────────────────────────────── */
+  --line: rgba(255, 255, 255, .08);
+  --line-soft: rgba(255, 255, 255, .045);
+  --line-strong: rgba(255, 255, 255, .16);
+
+  /* ─── Interativo — o acento É o branco ───────────────── */
+  --accent: var(--ink);
+  --accent-hover: #ffffff;
+  --accent-fg: var(--ink);
+  --accent-soft: rgba(255, 255, 255, .07);
+  --accent-line: rgba(255, 255, 255, .22);
+  --accent-glow: rgba(255, 255, 255, .18);
+  --focus-ring: rgba(255, 255, 255, .35);
+
+  --hover: rgba(255, 255, 255, .05);
+  --pressed: rgba(255, 255, 255, .09);
+  --selected: rgba(255, 255, 255, .08);
+
+  /* ─── Semântico — a única cor do sistema ─────────────── */
+  --ok: #3ecf8e;
+  --ok-fg: #5fe0a4;
+  --ok-soft: rgba(62, 207, 142, .12);
+  --ok-line: rgba(62, 207, 142, .3);
+
+  --warn: #e5a63b;
+  --warn-fg: #f0bb5e;
+  --warn-soft: rgba(229, 166, 59, .13);
+  --warn-line: rgba(229, 166, 59, .32);
+
+  --danger: #e5484d;
+  --danger-fg: #f07276;
+  --danger-soft: rgba(229, 72, 77, .13);
+  --danger-line: rgba(229, 72, 77, .32);
+
+  --info: rgba(244, 244, 242, .6);
+  --info-fg: rgba(244, 244, 242, .8);
+  --info-soft: rgba(255, 255, 255, .07);
+  --info-line: rgba(255, 255, 255, .18);
+
+  --neutral: rgba(244, 244, 242, .4);
+  --neutral-fg: rgba(244, 244, 242, .55);
+  --neutral-soft: rgba(255, 255, 255, .05);
+  --neutral-line: rgba(255, 255, 255, .12);
+
+  /* ─── Departamentos — dessaturados, mas distintos ────── */
+  --triagem: #cf8f7a;
+  --diagnostico: #c9b478;
+  --comercial: #89a9c9;
+  --producao: #86c7b5;
+  --dept-conteudo: #a6bccb;
+  --suporte: #d4ab8e;
+
+  --v-ai: #8fb9cf; --v-marketing: #cfae7a; --v-sites: #86c7b5; --v-devops: #a89ad4; --v-craft: #9fc08f;
+
+  --pri-urgent: var(--danger);
+  --pri-high: #d98a5a;
+  --pri-medium: var(--warn);
+  --pri-low: rgba(244, 244, 242, .4);
+
+  /* ─── Elevação — profundidade vem da linha ───────────── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35), 0 8px 20px -10px rgba(0, 0, 0, .5);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, .4), 0 16px 36px -16px rgba(0, 0, 0, .6);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, .45), 0 32px 64px -24px rgba(0, 0, 0, .7);
+  --shadow-modal: 0 40px 100px -20px rgba(0, 0, 0, .8);
+  --shadow-focus: 0 0 0 3px var(--focus-ring);
+
+  /* ─── Camadas ────────────────────────────────────────── */
+  --z-sticky: 20; --z-tabs: 90; --z-dropdown: 1000; --z-panel: 1100;
+  --z-dialog: 1200; --z-sheet: 1300; --z-toast: 1400;
+
+  /* ─── Shell ──────────────────────────────────────────── */
+  --sidebar-w: 244px;
+  --sidebar-w-collapsed: 60px;
+  --topbar-h: 52px;
+  --content-max: 1280px;
+
+  /* textura do fundo: grade de pontos muito sutil */
+  --dot: rgba(255, 255, 255, .035);
+
+  /* ─── Aliases legados (marca antiga → monocromático) ─── */
+  --blue: var(--ink);
+  --blue-hover: var(--accent-hover);
+  --teal: var(--ink);
+  --gold: var(--warn);
+  --coral: var(--danger);
+  --red: var(--danger);
+  --red-hover: #c93b40;
+  --sand: var(--surface-2);
+  --violet: var(--ink-soft);
+
+  --bg: var(--canvas);
+  --bg-elev: var(--surface);
+  --bg-elev-soft: var(--surface);
+  --bg-card: var(--surface);
+  --bg-hover: var(--hover);
+  --bg-subtle: var(--surface-2);
+  --bg-input: var(--surface);
+  --bg-backdrop: var(--overlay);
+  --border: var(--line);
+  --border-strong: var(--line-strong);
+  --border-focus: var(--accent-line);
+  --focus: var(--accent);
+
+  color-scheme: dark;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TEMA CLARO — o inverso exato: papel e tinta.
+   ═══════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  --canvas: #fafaf8;
+  --panel: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f1f1ed;
+  --surface-3: #e8e8e3;
+  --overlay: rgba(10, 10, 11, .45);
+
+  --ink: #0b0b0c;
+  --ink-soft: rgba(11, 11, 12, .74);
+  --ink-mute: rgba(11, 11, 12, .56);
+  --ink-faint: rgba(11, 11, 12, .36);
+  --ink-ghost: rgba(11, 11, 12, .12);
+  --ink-invert: #ffffff;
+
+  --line: rgba(11, 11, 12, .09);
+  --line-soft: rgba(11, 11, 12, .05);
+  --line-strong: rgba(11, 11, 12, .18);
+
+  --accent-hover: #000000;
+  --accent-soft: rgba(11, 11, 12, .06);
+  --accent-line: rgba(11, 11, 12, .26);
+  --accent-glow: rgba(11, 11, 12, .14);
+  --focus-ring: rgba(11, 11, 12, .3);
+
+  --hover: rgba(11, 11, 12, .04);
+  --pressed: rgba(11, 11, 12, .08);
+  --selected: rgba(11, 11, 12, .07);
+
+  --ok: #1f9d64; --ok-fg: #1a8656; --ok-soft: rgba(31, 157, 100, .12); --ok-line: rgba(31, 157, 100, .32);
+  --warn: #c7871a; --warn-fg: #a8700f; --warn-soft: rgba(199, 135, 26, .13); --warn-line: rgba(199, 135, 26, .34);
+  --danger: #d33d42; --danger-fg: #b8282d; --danger-soft: rgba(211, 61, 66, .12); --danger-line: rgba(211, 61, 66, .32);
+
+  --info: rgba(11, 11, 12, .6); --info-fg: rgba(11, 11, 12, .8); --info-soft: rgba(11, 11, 12, .06); --info-line: rgba(11, 11, 12, .18);
+  --neutral: rgba(11, 11, 12, .4); --neutral-fg: rgba(11, 11, 12, .55); --neutral-soft: rgba(11, 11, 12, .05); --neutral-line: rgba(11, 11, 12, .12);
+
+  --triagem: #b8674d; --diagnostico: #9d8a3f; --comercial: #4f78a3; --producao: #3a9a82; --dept-conteudo: #6b8aa0; --suporte: #b47f58;
+  --pri-low: rgba(11, 11, 12, .4);
+
+  --shadow-xs: 0 1px 2px rgba(11, 11, 12, .05);
+  --shadow-sm: 0 1px 3px rgba(11, 11, 12, .06), 0 8px 20px -10px rgba(11, 11, 12, .1);
+  --shadow-md: 0 2px 6px rgba(11, 11, 12, .07), 0 16px 36px -16px rgba(11, 11, 12, .16);
+  --shadow-lg: 0 4px 12px rgba(11, 11, 12, .08), 0 32px 64px -24px rgba(11, 11, 12, .22);
+  --shadow-modal: 0 40px 100px -20px rgba(11, 11, 12, .35);
+
+  --dot: rgba(11, 11, 12, .06);
+  --red-hover: #b8282d;
+
+  color-scheme: light;
+}

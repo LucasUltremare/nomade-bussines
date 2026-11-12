@@ -1,0 +1,177 @@
+/* ═══ LEADS ═══════════════════════════════════════════════════════════
+   Console dark. Teal = bom sinal, gold = atenção, coral = perda. */
+
+.ld { display: flex; flex-direction: column; gap: var(--s-3); height: 100%; min-height: 0; }
+.ld-hint { padding: var(--s-8); color: var(--ink-faint); font-size: var(--t-sm); }
+
+.ld-top { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
+.ld-filtros, .ld-origem { display: flex; gap: var(--s-1); flex-wrap: wrap; }
+.ld-filtros button, .ld-origem button {
+  height: 26px; padding: 0 var(--s-2); background: none;
+  border: 1px solid transparent; border-radius: var(--r-xs);
+  color: var(--ink-mute); font: inherit; font-size: var(--t-xs); cursor: pointer;
+}
+.ld-filtros button:hover, .ld-origem button:hover { color: var(--ink); background: var(--surface); }
+.ld-filtros button.on { color: var(--c, var(--accent-fg)); border-color: var(--line-strong); background: var(--surface); }
+.ld-origem button.on { color: var(--accent-fg); border-color: var(--accent-line); background: var(--accent-soft); }
+.ld-filtros em, .ld-origem em { font-style: normal; font-family: var(--mono); font-size: var(--t-2xs); opacity: .6; margin-left: 3px; }
+.ld-origem { margin-left: auto; }
+
+.ld-btn {
+  height: 28px; padding: 0 var(--s-3); display: inline-flex; align-items: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm);
+  color: var(--ink-soft); font: inherit; font-size: var(--t-xs); cursor: pointer; text-decoration: none;
+}
+.ld-btn:hover:not(:disabled) { border-color: var(--line-strong); color: var(--ink); }
+.ld-btn:disabled { opacity: .45; cursor: default; }
+.ld-btn--pri { background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent-fg); }
+.ld-sel {
+  height: 28px; padding: 0 var(--s-2); background: var(--canvas);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  color: var(--ink-soft); font: inherit; font-size: var(--t-xs); cursor: pointer;
+}
+.ld-x { width: 28px; height: 28px; background: none; border: 0; color: var(--ink-faint); font-size: 16px; cursor: pointer; }
+
+.ld-aviso {
+  display: flex; gap: var(--s-3); padding: var(--s-2) var(--s-3);
+  font-size: var(--t-xs); color: var(--ink-soft); cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line);
+  border-left: 2px solid var(--accent); border-radius: var(--r-xs);
+}
+.ld-aviso span { margin-left: auto; color: var(--ink-faint); }
+
+.ld-vazio {
+  margin: auto; text-align: center; display: flex; flex-direction: column; gap: var(--s-2); padding: var(--s-8);
+}
+.ld-vazio b { font-size: var(--t-md); color: var(--ink-soft); font-weight: 500; }
+.ld-vazio span { font-size: var(--t-xs); color: var(--ink-faint); }
+
+/* ── cards ── */
+.ld-grid {
+  flex: 1; min-height: 0; overflow-y: auto;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--s-2); align-content: start;
+}
+.ld-card {
+  padding: var(--s-3); cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+}
+.ld-card:hover { border-color: var(--line-strong); }
+.ld-card.on { border-color: var(--accent-line); grid-column: 1 / -1; }
+
+.ld-card-top { display: flex; align-items: center; gap: var(--s-2); }
+.ld-card-top b { flex: 1; min-width: 0; font-size: var(--t-sm); color: var(--ink); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ld-st { font-size: var(--t-2xs); color: var(--c); border: 1px solid currentColor; opacity: .8;
+  padding: 1px 5px; border-radius: var(--r-xs); white-space: nowrap; }
+
+/* A nota é um anel: dá pra ler o valor do lead sem ler o número.
+   O disco interno é ::before (absoluto, pinta acima do fundo cônico) e o
+   número vai num <i> relativo — sem isso o pseudo cobre o texto. */
+.ld-score {
+  position: relative; flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: conic-gradient(var(--accent) calc(var(--f) * 360deg), var(--line-soft) 0);
+}
+.ld-score::before {
+  content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--surface);
+}
+.ld-score i {
+  position: relative; font-style: normal;
+  font-family: var(--mono); font-size: var(--t-2xs); color: var(--ink);
+}
+
+.ld-emp { margin-top: 2px; font-size: var(--t-xs); color: var(--ink-mute); }
+.ld-meta { display: flex; align-items: center; gap: var(--s-2); margin-top: var(--s-2); font-size: var(--t-2xs); }
+.ld-fone { font-family: var(--mono); color: var(--ink-soft); }
+.ld-meta a { color: var(--accent-fg); }
+.ld-sem { color: var(--gold); }
+.ld-q { margin-left: auto; color: var(--ink-ghost); font-family: var(--mono); }
+.ld-motivo { margin-top: var(--s-2); font-size: var(--t-2xs); color: var(--ink-faint); line-height: var(--lh-snug); }
+
+/* ── card aberto ── */
+.ld-aberto { margin-top: var(--s-3); padding-top: var(--s-3); border-top: 1px solid var(--line-soft); cursor: default; }
+.ld-msg, .ld-quote pre {
+  margin: 0 0 var(--s-3); padding: var(--s-3); max-height: 260px; overflow: auto;
+  background: var(--canvas); border: 1px solid var(--line-soft); border-radius: var(--r-sm);
+  font-family: var(--mono); font-size: var(--t-2xs); color: var(--ink-mute);
+  white-space: pre-wrap; word-break: break-word;
+}
+.ld-quote-cab {
+  font-size: var(--t-2xs); font-family: var(--mono); letter-spacing: var(--tr-mono);
+  text-transform: uppercase; color: var(--ink-faint); margin-bottom: var(--s-2);
+}
+.ld-quote-cab em { font-style: normal; color: var(--accent-fg); }
+.ld-acoes { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; }
+
+/* ── prospecção ── */
+.ld-prosp { background: var(--surface); border: 1px solid var(--accent-line); border-radius: var(--r-md); overflow: hidden; }
+.ld-prosp-form { display: flex; gap: var(--s-2); padding: var(--s-3); align-items: center; flex-wrap: wrap; }
+.ld-prosp-form input {
+  height: 30px; padding: 0 var(--s-3); min-width: 180px; flex: 1;
+  background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-sm);
+  color: var(--ink); font: inherit; font-size: var(--t-sm);
+}
+.ld-prosp-form input:focus { outline: none; border-color: var(--accent-line); }
+.ld-prosp-form input::placeholder { color: var(--ink-ghost); }
+.ld-fonte { display: flex; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 2px; }
+.ld-fonte button {
+  height: 24px; padding: 0 var(--s-2); background: none; border: 0; border-radius: var(--r-xs);
+  color: var(--ink-faint); font: inherit; font-size: var(--t-2xs); cursor: pointer;
+}
+.ld-fonte button.on { background: var(--surface); color: var(--ink-soft); }
+
+.ld-prosp-res { max-height: 320px; overflow-y: auto; border-top: 1px solid var(--line-soft); }
+.ld-achado {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--line-soft); font-size: var(--t-xs);
+}
+.ld-achado.fora { opacity: .35; }
+.ld-achado b { flex: 0 0 190px; color: var(--ink); font-weight: 400;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ld-achado-c { flex: 0 0 150px; font-family: var(--mono); font-size: var(--t-2xs); color: var(--ink-mute); }
+.ld-achado-c i { font-style: normal; color: var(--ink-ghost); }
+.ld-achado-m { flex: 1; min-width: 0; font-size: var(--t-2xs); color: var(--ink-faint);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.ld-prosp-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s-3);
+  padding: var(--s-3); border-top: 1px solid var(--line-soft); font-size: var(--t-xs); color: var(--ink-mute);
+}
+.ld-prosp-foot b { color: var(--accent-fg); font-family: var(--mono); }
+
+@media (max-width: 760px) {
+  .ld-achado b { flex: 0 0 120px; }
+  .ld-achado-c, .ld-achado-m { display: none; }
+}
+
+/* ── seleção e exclusão ── */
+.ld-chk {
+  flex: 0 0 auto; width: 14px; height: 14px; margin: 0; cursor: pointer;
+  accent-color: var(--accent);
+}
+.ld-sel-bar {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-2) var(--s-3); font-size: var(--t-xs); color: var(--ink-soft);
+  background: var(--surface); border: 1px solid var(--accent-line);
+  border-radius: var(--r-sm);
+}
+.ld-sel-bar b { color: var(--accent-fg); font-family: var(--mono); }
+.ld-btn--del { color: var(--coral); border-color: var(--danger-line); }
+.ld-btn--del:hover:not(:disabled) { background: rgba(212, 101, 74, .08); border-color: var(--coral); }
+
+/* ── levas: cada busca que virou leads, e o desfazer dela ── */
+.ld-levas { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+.ld-levas-cab {
+  padding: var(--s-2) var(--s-3); font-size: var(--t-2xs); font-family: var(--mono);
+  letter-spacing: var(--tr-mono); text-transform: uppercase; color: var(--ink-faint);
+  border-bottom: 1px solid var(--line-soft);
+}
+.ld-leva {
+  display: flex; align-items: center; gap: var(--s-2);
+  padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--line-soft); font-size: var(--t-xs);
+}
+.ld-leva:last-child { border-bottom: 0; }
+.ld-leva b { color: var(--ink); font-weight: 500; }
+.ld-leva-r { color: var(--ink-mute); }
+.ld-leva-n { margin-left: auto; color: var(--ink-faint); font-size: var(--t-2xs); font-family: var(--mono); }

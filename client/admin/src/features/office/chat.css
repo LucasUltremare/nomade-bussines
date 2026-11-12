@@ -1,0 +1,926 @@
+/* ── CHAT com o orquestrador — console dark near-black (tokens.css) ── */
+
+.oc {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: calc(100vh - var(--topbar-h));
+  height: calc(100dvh - var(--topbar-h));
+  overflow: hidden;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--body);
+}
+
+/* rail fino */
+.oc-rail {
+  width: 60px;
+  flex: 0 0 60px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 0;
+  gap: 20px;
+  background: transparent;
+  z-index: 4;
+}
+.oc-ic {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: color .2s;
+  display: inline-flex;
+}
+.oc-ic:hover { color: var(--ink); }
+.oc-ic.on { color: var(--teal); }
+.oc-grow { flex: 1; }
+.oc-av {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  display: grid;
+  place-items: center;
+  color: var(--ink-invert);
+  font-size: 12px;
+  font-weight: 600;
+}
+.oc-av--sm { width: 26px; height: 26px; font-size: 10px; }
+
+/* gaveta de conversas */
+.oc-drawer {
+  position: absolute;
+  left: 60px;
+  top: 0;
+  bottom: 0;
+  width: 240px;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 6;
+  overflow-y: auto;
+  animation: oc-drawer-in .3s var(--ease-out);
+}
+@keyframes oc-drawer-in { from { transform: translateX(-12px); opacity: 0; } }
+/* head/erro/vazio são itens de um flex column com overflow: sem flex 0 0 auto
+   eles encolhem (e somem) assim que a lista de conversas passa da altura. */
+.oc-drawer-head {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 0 8px 10px;
+}
+/* linha da conversa: o × mora numa camada por cima, com espaço SEMPRE
+   reservado no item — hover não empurra o título nem rouba o clique. */
+.oc-drawer-row { position: relative; display: flex; min-width: 0; flex: 0 0 auto; }
+.oc-drawer-item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 8px 30px 8px 10px;
+  border-radius: 8px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--ink-mute);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background .15s, color .15s;
+}
+.oc-drawer-item:hover { background: var(--hover); color: var(--ink); }
+.oc-drawer-row.on .oc-drawer-item { background: var(--selected); color: var(--accent-fg); }
+.oc-drawer-x {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink-faint);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .15s, color .15s, background .15s;
+}
+.oc-drawer-row:hover .oc-drawer-x,
+.oc-drawer-x:focus-visible { opacity: 1; }
+.oc-drawer-x:hover { color: var(--danger-fg); background: var(--hover); }
+.oc-drawer-x:disabled { opacity: .4; cursor: default; }
+.oc-drawer-err {
+  flex: 0 0 auto;
+  font-size: 11.5px;
+  color: var(--danger-fg);
+  padding: 4px 8px 6px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.oc-drawer-empty { flex: 0 0 auto; font-size: 12px; color: var(--ink-faint); padding: 0 8px; }
+
+/* palco */
+.oc-stage { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; }
+.oc-top {
+  height: 52px;
+  flex: 0 0 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s, background .3s;
+  z-index: 3;
+}
+.oc-top.scrolled { border-color: var(--line); background: var(--canvas); }
+.oc-conv {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 15px;
+  opacity: 0;
+  transition: opacity .4s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+.oc-conv.show { opacity: 1; }
+.oc-top-r { display: flex; gap: 8px; align-items: center; }
+.oc-chip-sm {
+  font-size: 12px;
+  color: var(--ink-mute);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 5px 12px;
+  background: var(--surface);
+}
+
+.oc-scroll { flex: 1; min-width: 0; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+.oc-scroll::-webkit-scrollbar { width: 10px; }
+.oc-scroll::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 5px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.oc-col { width: 100%; max-width: 760px; min-width: 0; margin: 0 auto; padding: 0 24px; }
+
+/* hero */
+.oc-hero {
+  min-height: calc(100vh - var(--topbar-h) - 52px);
+  min-height: calc(100dvh - var(--topbar-h) - 52px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  padding-bottom: 5vh;
+}
+.oc-hero .oc-mark {
+  width: 48px;
+  height: 48px;
+  animation: oc-pop .7s var(--ease-out);
+}
+.oc-hero h1 {
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: clamp(26px, 3.6vw, 40px);
+  letter-spacing: -.03em;
+  line-height: 1.1;
+  margin: 0;
+  animation: oc-rise .7s var(--ease-out);
+}
+.oc-hero h1 b { font-weight: 800; }
+.oc-sub { color: var(--ink-mute); font-size: 14px; margin-top: -12px; }
+@keyframes oc-pop { from { opacity: 0; transform: scale(.8); } }
+@keyframes oc-rise { from { opacity: 0; transform: translateY(12px); } }
+
+/* command box */
+.oc-box {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  padding: 14px 15px 10px;
+  transition: border-color .25s, box-shadow .25s;
+}
+.oc-box:focus-within {
+  border-color: color-mix(in srgb, var(--teal) 60%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 8%, transparent);
+}
+.oc-field {
+  width: 100%;
+  min-height: 42px;
+  border: none;
+  background: none;
+  resize: none;
+  font-size: 14.5px;
+  color: var(--ink);
+  font-family: var(--body);
+  line-height: 1.5;
+}
+.oc-field:focus { outline: none; }
+.oc-field::placeholder { color: var(--ink-faint); }
+.oc-bar { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.oc-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink-mute);
+  font-family: var(--body);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 5px 10px;
+  background: none;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.oc-act:hover { border-color: var(--accent-line); color: var(--accent-fg); }
+.oc-spacer { flex: 1; }
+.oc-send {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  display: grid;
+  place-items: center;
+  color: var(--ink-invert);
+  transition: opacity .2s, filter .2s;
+}
+.oc-send:hover:not(:disabled) { filter: brightness(1.12); }
+.oc-send:disabled { opacity: .35; cursor: not-allowed; }
+.oc-boxfoot {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+/* @menções */
+.oc-mentions {
+  position: absolute;
+  bottom: 100%;
+  left: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  z-index: 10;
+}
+.oc-mentions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  padding: 6px 11px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.oc-mentions button:hover { background: var(--hover); }
+.oc-mentions i { width: 7px; height: 7px; border-radius: 50%; }
+
+/* thread
+   REGRA DE OURO desta tela: todo container flex daqui pra baixo tem
+   min-width: 0 nos filhos de texto. Sem isso o filho não encolhe, estoura
+   a coluna de 760px e "come o espaço" do vizinho (o botão de decisão).
+   O padding-bottom acompanha a altura real do dock (--oc-dock-h, medido
+   no JS por ResizeObserver) pra o composer nunca cobrir o último card. */
+.oc-thread {
+  padding: 28px 0 calc(var(--oc-dock-h, 176px) + 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+.oc-thread > * { min-width: 0; max-width: 100%; }
+.oc-usermsg {
+  align-self: flex-end;
+  max-width: min(82%, 100%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px 13px 3px 13px;
+  padding: 11px 14px;
+  font-size: 14px;
+  animation: oc-msgin .5s var(--ease-out);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+@keyframes oc-msgin { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+
+.oc-orq { display: flex; gap: 14px; align-items: flex-start; min-width: 0; animation: oc-msgin .5s var(--ease-out); }
+.oc-orq .oc-mark { flex: 0 0 32px; margin-top: 2px; }
+/* a coluna de conteúdo do orquestrador: encolhe de verdade */
+.oc-body { flex: 1 1 auto; min-width: 0; max-width: 100%; }
+/* a marca pinta pelos tokens (o JSX não carrega hex) */
+.oc-mark .w1 { stroke: var(--blue); }
+.oc-mark .w2 { stroke: var(--teal); opacity: .4; }
+.oc-mark.thinking .w1 { stroke-dasharray: 6 5; animation: oc-flow 1.1s linear infinite; }
+@keyframes oc-flow { to { stroke-dashoffset: -22; } }
+
+/* timeline de trabalho */
+.oc-steps { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+.oc-step {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--ink-mute);
+  min-width: 0;
+  animation: oc-stepin .45s var(--ease-out);
+}
+.oc-step > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+@keyframes oc-stepin { from { opacity: 0; transform: translateX(-6px); } }
+.oc-st { width: 16px; height: 16px; flex: 0 0 16px; position: relative; }
+.oc-ring {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--teal) 25%, transparent);
+  border-top-color: var(--teal);
+  animation: oc-spin .7s linear infinite;
+}
+@keyframes oc-spin { to { transform: rotate(360deg); } }
+.oc-chk { position: absolute; inset: 0; display: none; width: 16px; height: 16px; stroke: var(--teal); }
+.oc-step.done { color: var(--ink); }
+.oc-step.done .oc-ring { display: none; }
+.oc-step.done .oc-chk { display: block; animation: oc-pop .35s var(--ease-out); }
+
+/* resposta */
+.oc-answer {
+  max-width: 100%;
+  min-width: 0;
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: var(--ink);
+  margin: 4px 0 2px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.oc-caret {
+  display: inline-block;
+  width: 2px;
+  height: 17px;
+  background: var(--teal);
+  vertical-align: -3px;
+  margin-left: 1px;
+  animation: oc-blink 1s steps(1) infinite;
+}
+@keyframes oc-blink { 50% { opacity: 0; } }
+
+/* card de passos */
+.oc-passos {
+  margin-top: 14px;
+  max-width: 100%;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  container-type: inline-size;   /* mede a LARGURA REAL do card, não a da janela */
+  animation: oc-msgin .5s var(--ease-out);
+}
+.oc-passos-head {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  justify-content: space-between;
+  min-width: 0;
+}
+.oc-passos-head > span { min-width: 0; overflow-wrap: anywhere; }
+
+.oc-pitem {
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+  animation: oc-stepin .45s var(--ease-out) backwards;
+}
+.oc-pitem:nth-child(3) { animation-delay: .085s; }
+.oc-pitem:nth-child(4) { animation-delay: .17s; }
+.oc-pitem:nth-child(5) { animation-delay: .255s; }
+.oc-pitem:nth-child(6) { animation-delay: .34s; }
+.oc-pitem:nth-child(7) { animation-delay: .425s; }
+.oc-pitem:nth-child(8) { animation-delay: .51s; }
+/* NÃO usar .oc-pitem:last-of-type aqui: head, itens e foot são todos <div>,
+   então o "último do tipo" é o .oc-passfoot e a regra nunca casava. A borda
+   do último item é justamente o filete que separa a lista do rodapé. */
+.oc-pitem.decision { background: color-mix(in srgb, var(--coral) 5%, transparent); }
+.oc-pitem.decision.open { background: color-mix(in srgb, var(--coral) 8%, transparent); }
+/* decisão aberta: a pergunta vive no bloco de ação — a linha só rotula,
+   sem repetir o texto (e sem disputar largura com o status). */
+.oc-pitem.decision.open .oc-prow { padding-bottom: 7px; }
+
+/* a linha: só o resumo encolhe. Dept, meta e status não encolhem —
+   se não couber, a linha QUEBRA (flex-wrap) em vez de espremer. */
+.oc-prow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 11px;
+  padding: 11px 14px;
+  min-width: 0;
+}
+.oc-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 7px; }
+.oc-dept {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  flex: 0 0 74px;
+  max-width: 74px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.oc-nm {
+  font-size: 13.5px;
+  font-weight: 500;
+  flex: 1 1 190px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.oc-pmeta {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 38%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.oc-stt {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.oc-stt.ok { color: var(--ok-fg); }
+.oc-stt.warn { color: var(--coral); }
+
+/* card estreito (sidebar aberta / janela pequena): o dept vira largura
+   natural e o resumo ganha o espaço de volta. */
+@container (max-width: 480px) {
+  .oc-dept { flex: 0 0 auto; max-width: 96px; }
+  .oc-nm { flex: 1 1 140px; }
+  .oc-pmeta { max-width: 100%; }
+}
+
+/* ── bloco de ação da decisão (resolve sem sair do chat) ── */
+.oc-decbox {
+  margin: 0 14px 12px;
+  padding: 11px 13px;
+  border: 1px solid color-mix(in srgb, var(--coral) 28%, var(--line));
+  border-left: 2px solid var(--coral);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--coral) 6%, var(--surface));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+.oc-decq {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.oc-decctx {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.oc-decsug {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.oc-decsug b {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 500;
+  margin-right: 7px;
+}
+.oc-decform { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.oc-decta {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 58px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.oc-decta:focus { outline: none; border-color: var(--coral); }
+.oc-decta::placeholder { color: var(--ink-faint); }
+.oc-decta:disabled { opacity: .55; }
+.oc-decacts {
+  display: flex;
+  flex-wrap: wrap;      /* botão nunca é cortado: cai pra linha de baixo */
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.oc-dbtn {
+  flex: 0 1 auto;
+  max-width: 100%;
+  font-family: var(--body);
+  font-size: 12.5px;
+  line-height: 1.3;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-3);
+  color: var(--ink);
+  border-radius: 16px;
+  padding: 7px 13px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: border-color .15s, color .15s, filter .15s;
+}
+.oc-dbtn:hover:not(:disabled) { border-color: var(--line-strong); color: var(--accent-fg); }
+.oc-dbtn.go {
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  color: var(--ink-invert);
+  font-weight: 600;
+  border: none;
+}
+.oc-dbtn.go:hover:not(:disabled) { filter: brightness(1.12); color: #04121a; }
+.oc-dbtn:disabled { opacity: .45; cursor: not-allowed; }
+.oc-declink {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  padding: 4px 2px;
+  font-family: var(--body);
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color .15s;
+}
+.oc-declink:hover { color: var(--ink-mute); }
+.oc-decnote {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  color: var(--ink-faint);
+  overflow-wrap: anywhere;
+}
+.oc-decnote.err { color: var(--danger-fg); font-family: var(--body); font-size: 12px; letter-spacing: 0; }
+.oc-decstate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: -4px 14px 11px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  color: var(--ok-fg);
+  overflow-wrap: anywhere;
+}
+.oc-decstate.err { color: var(--danger-fg); }
+/* "verificando…" não é sucesso: não pode sair verde de ok */
+.oc-decstate.wait { color: var(--ink-faint); }
+
+.oc-passfoot { padding: 11px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 9px; min-width: 0; }
+.oc-pbtn {
+  flex: 0 1 auto;
+  max-width: 100%;
+  font-size: 12.5px;
+  font-family: var(--body);
+  border: 1px solid var(--line);
+  background: var(--surface-3);
+  border-radius: 16px;
+  padding: 7px 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+  transition: border-color .15s, color .15s;
+}
+.oc-pbtn:hover { border-color: var(--line-strong); }
+.oc-pbtn.primary {
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  color: var(--ink-invert);
+  font-weight: 600;
+  border: none;
+}
+
+/* composer ancorado */
+.oc-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px 24px 20px;
+  background: linear-gradient(180deg, transparent, var(--canvas) 45%);
+  display: flex;
+  justify-content: center;
+  z-index: 3;
+}
+.oc-dock .oc-box { max-width: 680px; }
+
+@media (max-width: 640px) {
+  .oc-rail { display: none; }
+  /* o rail some: a gaveta não pode ficar com 60px de vão morto na esquerda
+     nem estourar a tela com largura fixa. */
+  .oc-drawer { left: 0; width: min(280px, 84vw); }
+  .oc-col { padding: 0 16px; }
+  .oc-decbox { margin: 0 10px 11px; }
+  .oc-decstate { margin: -4px 10px 11px; }
+  .oc-prow { padding: 11px 10px; }
+  .oc-drawer-x { opacity: 1; }   /* sem hover no toque: o × fica visível */
+}
+@media (prefers-reduced-motion: reduce) {
+  .oc *, .oc { animation: none !important; transition: none !important; }
+}
+
+/* ── seletor do orquestrador (rodapé da caixa + dock) ── */
+.oc-orqsel { position: relative; }
+.oc-orqbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 2px 0;
+  color: var(--ink-faint);
+  font-family: var(--body);
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: color .15s;
+}
+.oc-orqbtn:hover { color: var(--ink-mute); }
+.oc-orqmdl { font-family: var(--mono); font-size: 11px; }
+.oc-orqerr { display: block; font-size: 11px; color: var(--danger-fg); margin-top: 2px; }
+.oc-orqmenu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  min-width: 220px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.oc-orqgroup { display: flex; flex-direction: column; }
+.oc-orqprov {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 5px 10px 3px;
+}
+.oc-orqopt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-mute);
+  cursor: pointer;
+  text-align: left;
+}
+.oc-orqopt:hover { background: var(--hover); color: var(--ink); }
+.oc-orqopt i { width: 6px; height: 6px; border-radius: 50%; background: transparent; flex-shrink: 0; }
+.oc-orqopt.on { color: var(--accent-fg); }
+.oc-orqopt.on i { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+.oc-orqsel.compact .oc-orqbtn { font-size: 11.5px; }
+.oc-dock-inner {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.oc-dock-inner .oc-box { max-width: none; }
+
+/* recado de decisão + retomada automática */
+.oc-drawer-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oc-drawer-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--coral) 60%, transparent);
+}
+
+.oc-sysmsg {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 11px 14px;
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--coral) 32%, var(--line));
+  border-left: 2px solid var(--coral);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--coral) 7%, var(--surface));
+  animation: oc-msgin .5s var(--ease-out);
+}
+.oc-sysic { color: var(--coral); display: flex; margin-top: 1px; flex: 0 0 15px; }
+.oc-sysbody { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.oc-syshead {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--coral);
+  overflow-wrap: anywhere;
+}
+.oc-systxt { font-size: 13.5px; color: var(--ink); line-height: 1.5; overflow-wrap: anywhere; word-break: break-word; }
+.oc-sysres { font-size: 13px; color: var(--ink-mute); line-height: 1.5; overflow-wrap: anywhere; word-break: break-word; }
+
+.oc-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: var(--ink-faint);
+  padding: 2px 0;
+}
+.oc-note.err { color: var(--danger-fg); font-family: var(--body); font-size: 12.5px; letter-spacing: 0; }
+
+/* imagem gerada por agent — dentro do card de passos */
+.oc-img {
+  display: block;
+  margin: 8px 0 2px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 320px;
+  line-height: 0;
+  transition: border-color var(--fast) ease;
+}
+.oc-img:hover { border-color: var(--accent-line); }
+.oc-img img { width: 100%; height: auto; display: block; }
+
+/* ── mobile: o chat é a tela toda, composer no polegar ── */
+@media (max-width: 820px) {
+  .oc { height: calc(100dvh - var(--topbar-h)); }
+  .oc-rail { display: none; }               /* as ações do rail vão pro topo */
+  .oc-drawer { left: 0; width: min(86vw, 320px); z-index: 20; }
+
+  .oc-top { padding: 0 12px; gap: 8px; }
+  .oc-top .oc-chip-sm { display: none; }
+  .oc-conv { max-width: 100%; }
+
+  .oc-col { padding: 0 14px; }
+  .oc-hero { min-height: calc(100dvh - var(--topbar-h) - 52px - 120px); gap: 18px; }
+  .oc-hero h1 { font-size: clamp(22px, 7vw, 30px); }
+  .oc-sub { font-size: 13px; }
+
+  .oc-thread { padding: 18px 0 190px; gap: 18px; }
+  .oc-usermsg { max-width: 92%; }
+  .oc-orq { gap: 10px; }
+
+  /* composer colado no rodapé, acima da barra de abas do shell */
+  .oc-dock {
+    padding: 10px 12px calc(74px + env(safe-area-inset-bottom, 0px));
+  }
+  .oc-dock-inner { max-width: none; }
+  .oc-box { padding: 11px 12px 8px; }
+  .oc-field { font-size: 16px; min-height: 38px; } /* 16px = iOS não dá zoom */
+  .oc-act { padding: 7px 12px; min-height: 34px; }
+  .oc-send { width: 38px; height: 38px; }
+
+  /* card de passos e decisão: coluna, botões grandes */
+  .oc-prow { flex-wrap: wrap; row-gap: 4px; }
+  .oc-dept { width: auto; flex: 0 0 auto; }
+  .oc-decacts { gap: 8px; }
+  .oc-dbtn { min-height: 40px; padding: 8px 14px; }
+  .oc-img { max-width: 100%; }
+  .oc-mentions { left: 8px; right: 8px; }
+}
+
+/* retomada represada: faltam decisões do lote pra ele seguir */
+.oc-espera {
+  display: flex; align-items: center; gap: 9px;
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 9px 13px;
+  border: 1px dashed var(--warn-line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--gold) 6%, transparent);
+  color: var(--warn-fg);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.oc-espera-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gold); flex-shrink: 0;
+  animation: oc-blink 1.6s ease-in-out infinite;
+}
+
+/* anexos temporários da conversa */
+.oc-anexos { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; }
+.oc-anexo {
+  display: inline-flex; align-items: center; gap: 6px;
+  max-width: 100%;
+  padding: 4px 6px 4px 10px;
+  border: 1px solid var(--line); border-radius: 16px;
+  background: var(--surface-3);
+  font-family: var(--mono); font-size: 10.5px; color: var(--ink-mute);
+  overflow: hidden;
+}
+.oc-anexo button {
+  border: none; background: none; cursor: pointer;
+  color: var(--ink-faint); font-size: 14px; line-height: 1; padding: 0 2px;
+}
+.oc-anexo button:hover { color: var(--danger-fg); }
+.oc-anexo-err { font-size: 11.5px; color: var(--warn-fg); line-height: 1.4; }
+
+/* avatar do orquestrador (marca Nomade) pulsando enquanto pensa */
+.oc-mark-nb.thinking { animation: ocMarkPensa 1.1s ease-in-out infinite; }
+@keyframes ocMarkPensa { 50% { opacity: .45; transform: scale(.94); } }
+@media (prefers-reduced-motion: reduce) { .oc-mark-nb.thinking { animation: none; } }
+.oc-orq .oc-mark-nb { flex: 0 0 32px; margin-top: 2px; }
+
+.oc-hero .oc-mark-nb {
+  width: 48px;
+  height: 48px;
+  animation: oc-pop .7s var(--ease-out);
+}
+
+/* seletor com todos os provedores: rola, busca no topo, sem chave fica apagado */
+.oc-orqmenu { max-height: min(60vh, 460px); overflow-y: auto; min-width: 280px; }
+.oc-orqfind { position: sticky; top: -6px; background: var(--panel); padding: 2px 0 6px; z-index: 1; }
+.oc-orqfind input { width: 100%; height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-family: var(--mono); font-size: 12px; }
+.oc-orqgroup.off .oc-orqprov { opacity: .55; }
+.oc-orqprov em { font-style: normal; margin-left: 6px; text-transform: none; letter-spacing: 0; }

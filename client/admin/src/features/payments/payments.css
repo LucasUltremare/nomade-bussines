@@ -1,0 +1,49 @@
+/* ═══ PAGAMENTOS ═══ */
+.py { max-width: 1100px; }
+.py-head { margin-bottom: 20px; }
+.py-title { font-weight: 600; font-size: 26px; line-height: 1.1; letter-spacing: -.03em; margin-bottom: 6px; }
+.py-sub { color: var(--ink-mute); font-size: var(--t-md); max-width: 62ch; line-height: 1.5; }
+.py-warn { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-bottom: 16px; border: 1px solid var(--warn-line); background: var(--warn-soft); color: var(--warn-fg); border-radius: var(--r-md); font-size: var(--t-sm); }
+.py-warn span { flex: 1; }
+.py-warn button { font-weight: 600; color: var(--ink); white-space: nowrap; }
+.py-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: start; }
+.py-card { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: 18px 20px; }
+.py-card h2 { font-size: var(--t-base); font-weight: 600; letter-spacing: var(--tr-tight); margin-bottom: 14px; }
+.py-form { display: grid; gap: 14px; }
+.py-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.py-f { display: grid; gap: 6px; } .py-f > span { font-size: var(--t-xs); color: var(--ink-mute); }
+.py-f input, .py-f select { width: 100%; height: 40px; padding: 0 11px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--canvas); color: var(--ink); font: inherit; font-size: var(--t-base); outline: 0; }
+.py-f input:focus, .py-f select:focus { border-color: var(--ink); }
+.py-money { position: relative; } .py-money i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-style: normal; font-size: var(--t-sm); color: var(--ink-faint); }
+.py-money input { padding-left: 34px; font-variant-numeric: tabular-nums; }
+.py-seg { display: flex; border: 1px solid var(--line-strong); border-radius: var(--r-sm); padding: 2px; width: fit-content; }
+.py-seg button { padding: 6px 14px; border-radius: 5px; font-size: var(--t-sm); color: var(--ink-mute); }
+.py-seg button[aria-pressed="true"] { background: var(--ink); color: var(--ink-invert); }
+.py-hint { font-size: var(--t-sm); color: var(--ink-mute); } .py-hint b { color: var(--ink); }
+.py-err { font-size: var(--t-sm); color: var(--danger-fg); }
+.py-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); font-size: var(--t-base); font-weight: 600; color: var(--ink-soft); background: var(--surface); font-family: var(--body); text-decoration: none; }
+.py-btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ink); text-decoration: none; }
+.py-btn--p { background: var(--ink); color: var(--ink-invert); border-color: var(--ink); } .py-btn--p:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+.py-btn:disabled { opacity: .4; }
+.py-done { margin-top: 4px; padding: 14px 16px; border: 1px solid var(--ok-line); background: var(--ok-soft); border-radius: var(--r-md); animation: fadeIn var(--base) ease; }
+.py-done-h { display: flex; align-items: center; gap: 8px; font-size: var(--t-sm); color: var(--ok-fg); margin-bottom: 8px; }
+.py-done-h i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.py-done code { display: block; font-family: var(--mono); font-size: var(--t-sm); color: var(--ink); word-break: break-all; margin-bottom: 12px; }
+.py-done-a { display: flex; flex-wrap: wrap; gap: 8px; }
+.py-empty { padding: 20px; border: 1px dashed var(--line-strong); border-radius: var(--r-md); color: var(--ink-faint); font-size: var(--t-sm); text-align: center; }
+.py-list { display: grid; }
+.py-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 12px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line-soft); }
+.py-item:last-child { border-bottom: 0; } .py-item.off { opacity: .5; }
+.py-item-b { min-width: 0; display: grid; gap: 2px; }
+.py-item-b b { font-size: var(--t-base); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .py-item-b b small { font-weight: 400; color: var(--ink-faint); font-size: var(--t-xs); margin-left: 6px; }
+.py-item-b span { font-size: var(--t-xs); color: var(--ink-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.py-item-v { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; } .py-item-v small { font-weight: 400; color: var(--ink-faint); font-size: var(--t-xs); }
+.py-pill { font-size: var(--t-2xs); font-family: var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: var(--r-full); border: 1px solid var(--line); color: var(--ink-mute); white-space: nowrap; }
+.py-pill--paid { color: var(--ok-fg); border-color: var(--ok-line); background: var(--ok-soft); }
+.py-pill--open { color: var(--warn-fg); border-color: var(--warn-line); background: var(--warn-soft); }
+.py-pill--pending_delivery { color: var(--info-fg); border-color: var(--info-line); }
+.py-item-a { display: flex; gap: 2px; }
+.py-ico { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--r-xs); color: var(--ink-faint); }
+.py-ico:hover { color: var(--ink); background: var(--hover); }
+@media (max-width: 960px) { .py-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .py-row { grid-template-columns: 1fr; } .py-item { grid-template-columns: 1fr auto; } .py-pill { grid-column: 1; justify-self: start; } .py-item-a { grid-column: 2; grid-row: 1 / span 2; } }

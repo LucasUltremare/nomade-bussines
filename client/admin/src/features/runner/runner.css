@@ -1,0 +1,296 @@
+/* ── RUNNER — a fila, os runs e a máquina que executa ── */
+
+.rn { display: flex; flex-direction: column; gap: 14px; }
+
+.rn-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.rn-title { font-size: var(--t-lg); font-weight: 600; color: var(--ink); letter-spacing: var(--tr-tight); margin: 0; }
+.rn-sub { font-size: var(--t-base); color: var(--ink-mute); line-height: var(--lh-base); margin: 4px 0 0; max-width: 640px; }
+.rn-sub b { color: var(--ink); font-weight: 600; }
+
+.rn-load { font-family: var(--mono); font-size: var(--t-sm); color: var(--ink-faint); padding: 18px 0; }
+.rn-vazio { font-size: 12.5px; color: var(--ink-mute); padding: 14px 0; }
+.rn-erro { font-size: 12px; color: var(--danger-fg); }
+
+/* abas internas */
+.rn-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.rn-tab {
+  background: none; border: none; cursor: pointer;
+  padding: 7px 12px; margin-bottom: -1px;
+  font-family: var(--body); font-size: 12.5px; font-weight: 600;
+  color: var(--ink-mute); border-bottom: 2px solid transparent;
+}
+.rn-tab:hover { color: var(--ink); }
+.rn-tab.on { color: var(--ink); border-bottom-color: var(--accent); }
+.rn-tab em { font-style: normal; font-family: var(--mono); font-size: var(--t-xs); color: var(--ink-faint); margin-left: 5px; }
+
+/* ── linha de task na fila ── */
+.rn-task {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-left: 2px solid transparent;
+  border-radius: var(--r-md); padding: 10px 13px;
+}
+.rn-task:hover { border-color: var(--line-strong); }
+.rn-task.pedida { border-left-color: var(--gold); }
+.rn-task.rodando { border-left-color: var(--teal); }
+.rn-task-txt { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.rn-task-nome { font-size: 13px; font-weight: 600; color: var(--ink); }
+.rn-task-meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px;
+  font-family: var(--mono); font-size: var(--t-xs); letter-spacing: var(--tr-mono);
+  text-transform: uppercase; color: var(--ink-faint);
+}
+.rn-task-meta b { color: var(--accent-fg); font-weight: 500; }
+.rn-task-meta .retoma { color: var(--warn-fg); }
+.rn-task-meta .trava { color: var(--danger-fg); text-transform: none; }
+
+.rn-play {
+  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  background: none; border: 1px solid var(--accent-line); color: var(--accent-fg);
+  border-radius: 999px; padding: 4px 13px; cursor: pointer;
+  font-family: var(--body); font-size: 12px; font-weight: 600;
+}
+.rn-play:hover:not(:disabled) { background: var(--accent-soft); color: var(--ink); }
+.rn-play:disabled { opacity: .4; cursor: not-allowed; }
+.rn-play.cancelar { border-color: var(--line-strong); color: var(--ink-mute); }
+
+/* nenhuma máquina de pé pra executar */
+.rn-offline {
+  font-size: 12.5px; line-height: var(--lh-base); color: var(--warn-fg);
+  background: var(--warn-soft); border: 1px solid var(--warn-line);
+  border-radius: var(--r-md); padding: 9px 13px;
+}
+
+/* seleção em lote na fila */
+.rn-lote { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-bottom: 2px; }
+.rn-check { width: 15px; height: 15px; accent-color: var(--teal); cursor: pointer; flex-shrink: 0; }
+.rn-check:disabled { cursor: not-allowed; opacity: .35; }
+
+/* seletor de projeto — um kanban por vez */
+.rn-projs {
+  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 3px;
+  scrollbar-width: thin;
+}
+.rn-proj {
+  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  background: none; border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 13px; cursor: pointer; white-space: nowrap;
+  font-family: var(--body); font-size: 12.5px; font-weight: 600; color: var(--ink-mute);
+}
+.rn-proj:hover { border-color: var(--line-strong); color: var(--ink); }
+.rn-proj.on { border-color: var(--accent-line); background: var(--accent-soft); color: var(--ink); }
+.rn-proj em {
+  font-style: normal; font-family: var(--mono); font-size: var(--t-xs);
+  color: var(--ink-faint); letter-spacing: var(--tr-mono);
+}
+.rn-proj.on em { color: var(--accent-fg); }
+.rn-proj-alerta {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--warn); flex-shrink: 0;
+}
+
+.rn-grupo-head {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding-bottom: 3px; border-bottom: 1px solid var(--line);
+}
+.rn-grupo-head b { font-size: 13px; font-weight: 600; color: var(--ink); }
+.rn-grupo-n {
+  font-family: var(--mono); font-size: var(--t-xs);
+  letter-spacing: var(--tr-mono); color: var(--ink-faint);
+}
+.rn-grupo-alerta {
+  font-family: var(--mono); font-size: var(--t-xs); letter-spacing: var(--tr-mono);
+  color: var(--warn-fg); border: 1px solid var(--warn-line);
+  background: var(--warn-soft); border-radius: 999px; padding: 1px 8px;
+}
+.rn-grupo-btn {
+  margin-left: auto; background: none; border: 1px solid var(--accent-line);
+  color: var(--accent-fg); border-radius: 999px; padding: 3px 12px; cursor: pointer;
+  font-family: var(--body); font-size: 11.5px; font-weight: 600;
+}
+.rn-grupo-btn:hover:not(:disabled) { background: var(--accent-soft); color: var(--ink); }
+.rn-grupo-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ── run ── */
+.rn-run {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); overflow: hidden;
+}
+.rn-run + .rn-run { margin-top: 8px; }
+.rn-run-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 13px; cursor: pointer; width: 100%;
+  background: none; border: none; text-align: left;
+}
+.rn-run-head:hover { background: var(--hover); }
+.rn-run-nome { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--ink); }
+.rn-run-meta {
+  font-family: var(--mono); font-size: var(--t-xs); color: var(--ink-faint);
+  letter-spacing: var(--tr-mono); white-space: nowrap;
+}
+.rn-badge {
+  font-family: var(--mono); font-size: var(--t-xs); letter-spacing: var(--tr-mono);
+  padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line-strong);
+  color: var(--ink-mute); white-space: nowrap;
+}
+.rn-badge.rodando { color: var(--ok-fg); border-color: var(--ok-line); background: var(--ok-soft); }
+.rn-badge.feito { color: var(--ok-fg); border-color: var(--ok-line); }
+.rn-badge.falhou { color: var(--danger-fg); border-color: var(--danger-line); background: var(--danger-soft); }
+.rn-badge.decisao { color: var(--warn-fg); border-color: var(--warn-line); background: var(--warn-soft); }
+.rn-badge.parado { color: var(--ink-mute); }
+
+.rn-run-body { border-top: 1px solid var(--line); padding: 10px 13px; display: flex; flex-direction: column; gap: 8px; }
+.rn-run-erro {
+  font-size: 12px; color: var(--danger-fg); background: var(--danger-soft);
+  border: 1px solid var(--danger-line); border-radius: var(--r-sm); padding: 7px 10px;
+}
+
+/* ── etapa ── */
+.rn-etapa { border-left: 2px solid var(--line-strong); padding: 0 0 0 11px; display: flex; flex-direction: column; gap: 4px; }
+.rn-etapa-top {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: var(--t-xs); letter-spacing: var(--tr-mono);
+  text-transform: uppercase; color: var(--ink-faint);
+}
+.rn-etapa-top b { color: var(--ink); font-weight: 600; text-transform: none; font-family: var(--body); font-size: 12.5px; }
+.rn-ferramentas { display: flex; flex-direction: column; gap: 2px; }
+.rn-ferramenta {
+  font-family: var(--mono); font-size: var(--t-xs); color: var(--ink-mute);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rn-saida {
+  font-size: 12px; color: var(--ink-soft); line-height: var(--lh-base);
+  white-space: pre-wrap; word-break: break-word;
+  background: var(--surface-2); border-radius: var(--r-sm); padding: 8px 10px;
+  max-height: 220px; overflow-y: auto;
+}
+.rn-mais {
+  align-self: flex-start; background: none; border: none; cursor: pointer;
+  font-family: var(--mono); font-size: var(--t-xs); color: var(--accent-fg); padding: 0;
+}
+
+/* etapa EM CURSO — o que está acontecendo agora */
+.rn-etapa--vivo { border-left-color: var(--teal); }
+.rn-vivo-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--ok-fg); text-transform: none;
+}
+.rn-vivo-tag i {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--teal);
+  animation: rn-pulso 1.4s ease-in-out infinite;
+}
+@keyframes rn-pulso { 0%, 100% { opacity: 1 } 50% { opacity: .25 } }
+
+/* ── contas e pastas ── */
+.rn-linha {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: 10px 13px;
+}
+.rn-linha + .rn-linha { margin-top: 8px; }
+.rn-linha-id { font-family: var(--mono); font-size: var(--t-sm); color: var(--ink); min-width: 90px; }
+.rn-linha-cam { font-family: var(--mono); font-size: var(--t-xs); color: var(--ink-faint); flex: 1; min-width: 140px; word-break: break-all; }
+.rn-in {
+  background: var(--bg, var(--canvas)); border: 1px solid var(--line);
+  border-radius: var(--r-sm); color: var(--ink);
+  padding: 5px 9px; font-family: var(--body); font-size: 12.5px; min-width: 120px;
+}
+.rn-in:focus { outline: none; border-color: var(--accent-line); }
+.rn-in--mono { font-family: var(--mono); font-size: var(--t-sm); flex: 1; }
+.rn-btn {
+  background: none; border: 1px solid var(--line); border-radius: var(--r-sm);
+  color: var(--ink-soft); padding: 5px 11px; cursor: pointer;
+  font-family: var(--body); font-size: 12px; font-weight: 600;
+}
+.rn-btn:hover:not(:disabled) { border-color: var(--line-strong); color: var(--ink); }
+a.rn-btn { text-decoration: none; display: inline-block; }
+.rn-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.rn-sw {
+  width: 38px; height: 21px; border-radius: 999px; flex-shrink: 0;
+  background: var(--ink-ghost); border: 1px solid var(--line-strong);
+  position: relative; cursor: pointer; padding: 0;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+.rn-sw i {
+  position: absolute; top: 2px; left: 2px; width: 15px; height: 15px;
+  border-radius: 50%; background: var(--ink-mute);
+  transition: transform var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+.rn-sw.on { background: var(--accent-soft); border-color: var(--accent-line); }
+.rn-sw.on i { transform: translateX(17px); background: var(--teal); }
+
+.rn-nota { font-size: 11.5px; color: var(--ink-faint); line-height: var(--lh-base); margin: 0; }
+.rn-nota code { font-family: var(--mono); font-size: var(--t-xs); color: var(--ink-mute); }
+
+@media (max-width: 720px) {
+  .rn-task { align-items: flex-start; flex-wrap: wrap; }
+  .rn-play { width: 100%; justify-content: center; }
+  .rn-linha-cam { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rn *, .rn { transition: none !important; animation: none !important; }
+  .rn-vivo-tag i { opacity: 1 !important; }
+}
+
+/* Máquina abandonada — sem sinal há mais de 7 dias. É outra coisa que
+   "offline agora": offline volta, abandonada é resto de instalação velha. */
+.rn-morta {
+  font-size: var(--t-2xs); padding: 1px 6px; border-radius: var(--r-xs);
+  color: var(--gold); border: 1px solid var(--warn-line); white-space: nowrap;
+}
+.rn-esquecer {
+  width: 22px; height: 22px; flex: 0 0 auto;
+  background: none; border: 1px solid transparent; border-radius: var(--r-xs);
+  color: var(--ink-ghost); font-size: 15px; line-height: 1; cursor: pointer;
+}
+.rn-esquecer:hover { color: var(--coral); border-color: var(--danger-line); }
+
+/* modo de energia — fica discreto no meio da linha de propósito: é ajuste de
+   rotina, não estado da máquina. O "⋯" ao lado marca pedido que ela ainda não
+   confirmou, o que é normal por até 60s (o intervalo do heartbeat). */
+.rn-modo {
+  background: var(--bg, var(--canvas)); border: 1px solid var(--line);
+  border-radius: var(--r-sm); color: var(--ink-faint);
+  padding: 3px 6px; font-family: var(--body); font-size: var(--t-xs);
+  cursor: pointer; flex: 0 0 auto;
+}
+.rn-modo:focus { outline: none; border-color: var(--accent-line); }
+.rn-modo:hover { color: var(--ink); }
+.rn-modo-pend { color: var(--gold); font-size: var(--t-sm); line-height: 1; }
+
+/* ── conectar máquina: os comandos, por sistema ── */
+.rn-passos { display: flex; flex-direction: column; gap: var(--s-2); }
+
+/* seletor de sistema — vem antes dos passos e reescreve os que mudam */
+.rn-os { display: flex; gap: var(--s-1); margin-bottom: var(--s-1); }
+.rn-os-b {
+  padding: 4px 10px; border: 1px solid var(--line); border-radius: var(--r-xs);
+  background: none; color: var(--ink-mute); font-size: var(--t-2xs); cursor: pointer;
+}
+.rn-os-b:hover { color: var(--ink); }
+.rn-os-b.on { color: var(--accent-fg); border-color: var(--accent-line); background: var(--accent-soft); }
+
+/* passo opcional (instalar Node) fica recuado: quase toda máquina já tem */
+.rn-passo.opc { background: none; border-style: dashed; }
+.rn-passo.opc .rn-passo-n { background: none; border: 1px solid var(--line); color: var(--ink-faint); }
+
+.rn-nota-so { font-family: var(--mono); font-size: var(--t-2xs); color: var(--ink-ghost); }
+.rn-passo {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm);
+}
+.rn-passo-n {
+  flex: 0 0 auto; width: 20px; height: 20px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--accent-soft); color: var(--accent-fg);
+  font-family: var(--mono); font-size: var(--t-2xs);
+}
+.rn-passo-corpo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.rn-passo-corpo code {
+  font-family: var(--mono); font-size: var(--t-xs); color: var(--ink);
+  cursor: pointer; word-break: break-all;
+}
+.rn-passo-corpo code:hover { color: var(--accent-fg); }
+.rn-passo-corpo span { font-size: var(--t-2xs); color: var(--ink-faint); }

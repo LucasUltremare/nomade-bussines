@@ -1,0 +1,177 @@
+/* ═══════════════════════════════════════════════════════════
+   BASE — reset, tipografia, superfícies globais, utilitários
+   ═══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--body);
+  font-size: var(--t-base);
+  line-height: var(--lh-base);
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
+  transition: background var(--base) ease, color var(--base) ease;
+}
+
+/* Números sempre alinhados — é um painel de dados, colunas têm que bater */
+.tnum, table, .stat-value, .metric-value, input[type="number"] { font-variant-numeric: tabular-nums; }
+
+h1, h2, h3, h4 {
+  font-family: var(--heading);
+  font-weight: 600;
+  letter-spacing: var(--tr-display);
+  line-height: var(--lh-tight);
+  color: var(--ink);
+}
+
+a { color: var(--accent-fg); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+button, input, select, textarea { font-family: inherit; font-size: inherit; color: var(--ink); }
+button { cursor: pointer; background: none; border: none; }
+button:disabled { cursor: not-allowed; }
+
+svg { flex-shrink: 0; }
+
+::selection { background: var(--accent-soft); color: var(--ink); }
+
+/* ─── Foco — visível, consistente, nunca removido ─────────── */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
+
+/* ─── Scrollbars ──────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: var(--ink-ghost) transparent; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--ink-ghost);
+  border-radius: var(--r-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); background-clip: content-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ─── Tipografia utilitária ───────────────────────────────── */
+
+/* Label mono em caixa alta — a assinatura "instrumento" do sistema.
+   Usado em stat labels, table heads, field labels, eyebrows. */
+.label-mono {
+  font-family: var(--mono);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tr-mono);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tr-mono);
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.eyebrow-dot {
+  width: 5px; height: 5px;
+  border-radius: var(--r-full);
+  background: var(--ok);
+  box-shadow: 0 0 0 3px var(--ok-soft);
+}
+
+.section-title {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: var(--t-md);
+  letter-spacing: var(--tr-tight);
+  color: var(--ink);
+  margin-bottom: var(--s-3);
+}
+
+.mono { font-family: var(--mono); font-size: var(--t-xs); }
+.muted { color: var(--ink-mute); }
+.faint { color: var(--ink-faint); }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ─── Animações ───────────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp { from { transform: translateY(6px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes slideDown { from { transform: translateY(-6px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes scaleIn { from { transform: scale(.97); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+@keyframes presence-pulse {
+  0% { box-shadow: 0 0 0 0 var(--ok-line); }
+  70% { box-shadow: 0 0 0 5px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+@keyframes bubbleRise {
+  0% { transform: translateY(0); opacity: 0 }
+  10% { opacity: .5 }
+  90% { opacity: .12 }
+  100% { transform: translateY(-110vh); opacity: 0 }
+}
+
+/* ─── Loading ─────────────────────────────────────────────── */
+.splash {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; background: var(--canvas);
+}
+.spinner {
+  width: 22px; height: 22px;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--accent);
+  border-radius: var(--r-full);
+  animation: spin .6s linear infinite;
+}
+
+/* Skeleton — para estados de carregamento nas páginas */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: var(--r-sm);
+}
+.skeleton::after {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--hover), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+/* ─── Acessibilidade ──────────────────────────────────────── */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

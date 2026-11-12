@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- macOS — LaunchAgent (por usuário, não por sistema: precisa do login do
+     Claude Code, que mora no home).
+
+       cp com.nomade.runner.plist ~/Library/LaunchAgents/
+       launchctl load -w ~/Library/LaunchAgents/com.nomade.runner.plist
+       launchctl list | grep nomade        # ver
+       tail -f ~/.nomade/runner.log        # log
+       launchctl unload -w ~/Library/LaunchAgents/com.nomade.runner.plist
+
+     Troca SEU-USUARIO e confere o caminho do node com `which nomade`. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.nomade.runner</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/nomade</string>
+    <string>runner</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>15</integer>
+  <key>StandardOutPath</key><string>/Users/SEU-USUARIO/.nomade/runner.log</string>
+  <key>StandardErrorPath</key><string>/Users/SEU-USUARIO/.nomade/runner.log</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+  </dict>
+</dict>
+</plist>

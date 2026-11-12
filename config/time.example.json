@@ -1,0 +1,10 @@
+{
+  "setores": [
+    { "id": "comercial", "label": "Comercial", "color": "#0077B6" },
+    { "id": "operacional", "label": "Operacional", "color": "#00A896" }
+  ],
+  "time": [
+    { "id": "ana", "nome": "Ana", "emails": ["ana@suaempresa.com"], "setor": "comercial", "unidade": "Comercial", "socio": true },
+    { "id": "bruno", "nome": "Bruno", "emails": ["bruno@suaempresa.com"], "setor": "operacional", "unidade": "Produto", "socio": true }
+  ]
+}

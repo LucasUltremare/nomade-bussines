@@ -1,0 +1,33 @@
+{
+  "name": "nomade-business",
+  "version": "0.1.0",
+  "description": "CRM, propostas, cobranças, kanban, agents de IA e memória da empresa — um painel só, self-hosted.",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "start:office": "node --env-file=.env ai-service.js",
+    "dev": "node --env-file=.env --watch server.js",
+    "dev:office": "node --env-file=.env --watch ai-service.js",
+    "dev:painel": "cd client/admin && npm run dev",
+    "build": "cd client/admin && npm ci && npm run build",
+    "check": "node scripts/check-rotas.mjs ai-service.js server.js && node scripts/check-env.mjs && node --check ai-service.js && node --check server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.228",
+    "@anthropic-ai/sdk": "^0.116.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^2.0.10",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.8.0",
+    "puppeteer-core": "^25.0.4",
+    "socket.io": "^4.7.0",
+    "web-push": "^3.6.7",
+    "zod": "^4.0.0"
+  }
+}
