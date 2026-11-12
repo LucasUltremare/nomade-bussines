@@ -5,6 +5,7 @@ import { useT, LANGS } from "../../i18n/index.jsx";
 import { HorarioEditor } from "../onboarding/Onboarding.jsx";
 import { RegiaoEditor } from "./Regiao.jsx";
 import { TelasEditor } from "./Telas.jsx";
+import { AmbienteLista } from "./Ambiente.jsx";
 import { setRegional } from "../../lib/regional.js";
 import "./settings.css";
 
@@ -91,6 +92,11 @@ export function Settings({ empresa, theme, onChange, onRerunOnboarding, onTour }
       </section>
 
       <Links />
+
+      <section className="st-sec">
+        <div className="st-sec-h"><div><h2>{t("amb.title")}</h2><p className="st-sec-s">{t("amb.sub")}</p></div></div>
+        <AmbienteLista />
+      </section>
 
       <section className="st-sec">
         <div className="st-sec-h"><div><h2>{t("set.help")}</h2><p className="st-sec-s">{t("set.help.sub")}</p></div></div>

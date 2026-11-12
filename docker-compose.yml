@@ -64,6 +64,7 @@ services:
       - MOEDA_PADRAO=${MOEDA_PADRAO:-}
       - FUSO_PADRAO=${FUSO_PADRAO:-}
       - PUPPETEER_EXECUTABLE_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/chromium-browser}
+      - BIND_HOST=${BIND_HOST:-}
 
   # Porta do painel (PAINEL_URL aponta pra cá) + escritório: agents, memória,
   # chat do orquestrador, fila do runner, login e download do CLI.
@@ -123,6 +124,12 @@ services:
       - WORKER_DESLIGADO=${WORKER_DESLIGADO:-}
       - ATENDIMENTO_DESLIGADO=${ATENDIMENTO_DESLIGADO:-}
       - WORKER_INTERVALO_MS=${WORKER_INTERVALO_MS:-}
+      # só pra tela Ajustes > Este computador saber o que está ligado
+      - MP_ACCESS_TOKEN=${MP_ACCESS_TOKEN:-}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - PUPPETEER_EXECUTABLE_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/chromium-browser}
+      - NOMADE_LOCAL=${NOMADE_LOCAL:-}
+      - BIND_HOST=${BIND_HOST:-}
 
 volumes:
   mongo-data:

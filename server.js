@@ -4443,7 +4443,11 @@ async function weeklyReportTick() {
  * ══════════════════════════════════════════════════════════════════════════ */
 
 connectDB().then(async () => {
-  httpServer.listen(PORT, () => console.log(`${PRODUTO} (server) on :${PORT} (HTTP + WS)`));
+  // BIND_HOST=127.0.0.1 deixa só este computador abrir (o instalador local usa;
+  // no Windows também evita o aviso do firewall). Vazio = todas as interfaces.
+  const aoSubir = () => console.log(`${PRODUTO} (server) on :${PORT} (HTTP + WS)`);
+  if (process.env.BIND_HOST) httpServer.listen(PORT, process.env.BIND_HOST, aoSubir);
+  else httpServer.listen(PORT, aoSubir);
 
   // Seed inicial de templates de briefing (só se collection vazia)
   try {

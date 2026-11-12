@@ -10,11 +10,12 @@ import fs from 'node:fs'
 const COMPOSE = 'docker-compose.yml'
 // qual serviço do compose roda qual arquivo
 const SERVICOS = {
-  office: ['ai-service.js', 'lib/leads.js', 'lib/empresa.js', 'lib/decisoes.js', 'lib/memoria-empresa.js'],
+  office: ['ai-service.js', 'lib/screenshot.js', 'lib/leads.js', 'lib/empresa.js', 'lib/decisoes.js', 'lib/memoria-empresa.js'],
   server: ['server.js', 'lib/email.js', 'lib/formato.js', 'lib/empresa.js', 'lib/empresa-config.js', 'lib/time.js', 'lib/screenshot.js', 'agents/orcamento/index.js'],
 }
 // vars que o próprio Docker/Node dá, ou que são de build
-const IGNORAR = new Set(['NODE_ENV', 'PORT', 'HOME', 'PATH', 'TZ'])
+// (o proxy vem do ambiente da máquina, não do .env)
+const IGNORAR = new Set(['NODE_ENV', 'PORT', 'HOME', 'PATH', 'TZ', 'HTTPS_PROXY', 'HTTP_PROXY', 'PROGRAMFILES', 'LOCALAPPDATA'])
 
 const compose = fs.readFileSync(COMPOSE, 'utf8')
 

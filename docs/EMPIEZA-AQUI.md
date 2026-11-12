@@ -1,87 +1,113 @@
-# Empieza aquí — corre Nomade Business en tu propia computadora
+# Empieza aquí: corre Nomade Business en tu computadora
 
-**Para quién es:** cualquiera. Un barbero, un dentista, una agencia de dos personas. No necesitas saber qué es una terminal; esta página te muestra dónde hacer clic.
+**Para quién es:** cualquier persona. Un barbero, una dentista, una agencia de dos personas, o quien quiere probarlo en la computadora del trabajo. No necesitas saber qué es una terminal; esta página muestra dónde hacer clic.
 
-**Qué obtienes:** un sitio privado, en tu computadora, con tus leads, clientes, propuestas, enlaces de pago, tareas y una IA que recuerda tu empresa. Nadie más lo ve, a menos que lo pongas en internet.
+**Qué obtienes:** un panel privado, en tu computadora, con tus leads, clientes, propuestas, links de pago, tareas y una IA que recuerda tu empresa. Nadie más lo ve.
 
-**Tiempo:** unos 20 minutos, casi todo esperando descargas.
+**Qué no necesitas:** Docker, permisos de administrador, instalar programas.
+
+**Tiempo:** unos 10 minutos, casi todo esperando descargas.
+
+---
+
+## 1. Descarga Nomade
+
+1. Entra en https://github.com/LucasUltremare/nomade-bussines/releases
+2. En la versión más nueva, abre **Assets** y haz clic en `nomade-business-<versión>.zip`.
+3. Descomprímelo:
+   - **Mac:** doble clic en el zip.
+   - **Windows:** clic derecho en el zip → **Extraer todo** → **Extraer**. No lo abras desde dentro del zip sin extraer: no funciona.
+4. Mueve la carpeta a un lugar fácil, como Documentos.
+
+## 2. Ábrelo
+
+- **Mac:** doble clic en **Nomade.command**. La primera vez macOS avisa que el archivo vino de internet. Cierra el aviso, haz **clic derecho** en Nomade.command → **Abrir** → **Abrir**. Después basta con doble clic.
+- **Windows:** doble clic en **Nomade.cmd**. Si aparece la pantalla azul "Windows protegió su PC", haz clic en **Más información** → **Ejecutar de todas formas**.
+- **Linux:** en una terminal, dentro de la carpeta: `./local/nomade.sh`
+
+Se abre una ventana negra. Esa ventana mantiene Nomade encendido.
+
+## 3. Responde cuatro preguntas
+
+1. **Idioma**: escribe 1, 2 o 3.
+2. **Nombre de la empresa**: lo que ven tus clientes.
+3. **Tu correo**: será tu usuario.
+4. **Una contraseña**: al menos 8 caracteres. Se ve como `****` mientras escribes. Anótala.
+
+La primera vez descarga Node.js (si la computadora no lo tiene) y la base de datos. Una sola vez, de 35 a 110 MB. Cuando diga **Listo**, abre el panel en el navegador (normalmente **http://localhost:5004**).
+
+## 4. Entra y termina la configuración
+
+Entra con tu correo y contraseña. El panel te guía: idioma, empresa, país y moneda, qué pantallas quieres usar, horario, primer link de registro, equipo, IA y, al final, **lo que funciona en esta computadora**. Puedes saltar cualquier paso y cambiarlo después en **Ajustes**.
+
+Deja la ventana negra abierta mientras lo usas. Si la cierras, Nomade se apaga; los datos quedan guardados.
 
 ---
 
-## 1. Instala Docker Desktop (una sola vez)
+## En la computadora del trabajo
 
-Docker es el programa que corre Nomade por ti. Es gratis.
+Casi todo funciona igual. Lo que cambia, y Nomade mismo lo avisa (en la ventana negra y en **Ajustes → Esta computadora**):
 
-1. Entra a https://www.docker.com/products/docker-desktop/
-2. Haz clic en **Download** para tu sistema (Mac o Windows) e instálalo como cualquier app.
-3. Abre **Docker Desktop**. Espera a que el ícono de la ballena (arriba en Mac, abajo a la derecha en Windows) deje de moverse. Déjalo abierto.
+- **Los links que envías al cliente** (propuesta, pago, registro) solo abren en esta computadora. Para enviarlos a clientes de verdad necesitas una dirección pública. Mira "Enviar links al cliente" abajo.
+- **Mercado Pago no puede avisar que pagaron**, porque no llega a tu computadora. El link de pago funciona; revisa el pago en Mercado Pago.
+- **Mercado Libre y Shopee** solo se conectan a una dirección pública con HTTPS. "Probar como cliente" en Atención funciona.
+- **La red de la empresa puede bloquear** la IA, Mercado Pago o la descarga de la base. Nomade dice qué dirección está bloqueada. Pide a TI que la libere.
+- **Proxy de la empresa:** lo lee solo de la configuración de Windows o Mac. Si aun así no sale a internet, pide a TI la dirección del proxy y ponla en el archivo `config.env` (mira "Dónde están los datos"): `HTTPS_PROXY=http://proxy.empresa:8080`
+- **Computadora suspendida = Nomade detenido.**
+- Por defecto, nadie más en la red de la empresa puede abrir tu panel.
 
-> Windows: el instalador puede pedir activar **WSL 2**. Acepta y reinicia si lo pide.
-
-## 2. Descarga Nomade
-
-1. Abre https://github.com/LucasUltremare/nomade-bussines
-2. Haz clic en el botón verde **Code** → **Download ZIP**.
-3. Descomprímelo. Aparece una carpeta `nomade-bussines-main`. Muévela a un lugar fácil, como el Escritorio.
-
-## 3. Abre una terminal dentro de esa carpeta
-
-La terminal es la ventana negra donde escribes un comando. Cómo abrirla **ya dentro de la carpeta**:
-
-- **Mac:** en Finder, encuentra la carpeta, clic derecho → **Nueva terminal en la carpeta**. (¿No aparece? Abre la app Terminal, escribe `cd ` con espacio, arrastra la carpeta a la ventana y pulsa Enter.)
-- **Windows:** abre la carpeta en el Explorador, clic derecho en un espacio vacío → **Open Git Bash here**. ¿No tienes Git Bash? Instálalo desde https://git-scm.com/download/win (todo por defecto) — o usa la app **Ubuntu**, si Docker configuró WSL por ti.
-
-## 4. Ejecuta el instalador
-
-Escribe esto y pulsa Enter:
-
-```bash
-bash instalar.sh
-```
-
-Pregunta cuatro cosas:
-
-1. **Idioma** — escribe 1, 2 o 3.
-2. **Nombre de la empresa** — lo que ven tus clientes.
-3. **Tu correo** — será tu usuario.
-4. **Una contraseña** — mínimo 8 caracteres. Anótala.
-
-Luego descarga y construye todo. La primera vez tarda unos minutos. Cuando diga **Listo**, abre el navegador en **http://localhost:5004**.
-
-## 5. Entra y responde la configuración
-
-Entra con el correo y la contraseña que elegiste. Nomade te guía por una configuración corta: idioma, qué quieres organizar, tu horario de atención, tu primer **enlace de registro** (una página que el cliente llena; cada envío cae en Leads), tu equipo y las herramientas que ya usas. Puedes saltar cualquier paso y cambiarlo después en **Ajustes**.
-
----
+¿Quieres ver todo de una vez? Corre la revisión (mira la tabla de comandos).
 
 ## Qué hacer después
 
-- **Crear un enlace para que el cliente pague:** ve a **Pagos**, escribe nombre, correo y monto, haz clic en **Crear enlace**. Envíalo por WhatsApp. Para recibir dinero de verdad, conecta **Mercado Pago** en **Integraciones** (necesitas una cuenta de Mercado Pago; pega el *Access token* de su página de desarrolladores).
-- **Compartir tu enlace de registro** en Instagram, WhatsApp o tu sitio. Está en **Ajustes → Enlaces de registro**.
-- **Invitar a tu equipo** en **Miembros**. Cada persona solo ve los módulos que marques.
-- **Poner la IA a trabajar:** pega una clave de Anthropic, OpenAI o Gemini en **Integraciones → Modelos de IA** y habla con ella en **Chat**.
+- **Crear un link de pago:** ve a **Pagos**, escribe nombre, correo y monto, haz clic en **Crear link**. Para cobrar de verdad, conecta **Mercado Pago** en **Integraciones** (pega el *Access token* de su página de desarrolladores).
+- **Compartir el link de registro** en Instagram, WhatsApp o tu sitio. Está en **Ajustes → Links de registro**.
+- **Invitar a tu equipo** en **Miembros**. Cada persona solo ve las pantallas que marques.
+- **Poner la IA a trabajar:** pega una clave de Anthropic, OpenAI o Gemini en **Integraciones** y habla con ella en el **Chat**.
+- **Ver otra vez dónde hacer clic:** presiona `?` en cualquier pantalla.
 
 ## Usarlo desde el celular u otra computadora
 
-En el mismo Wi-Fi, abre `http://<IP de tu computadora>:5004` (en Mac: Ajustes del Sistema → Wi-Fi → Detalles muestra la IP; en Windows: `ipconfig`). Luego, en el archivo `.env`, cambia `PAINEL_URL` y `BASE_URL` a esa dirección y ejecuta `bash instalar.sh` de nuevo.
+Corre el comando `configurar` (mira abajo) y responde **s** en "¿Abrir también desde el celular en el mismo Wi-Fi?". Luego abre Nomade otra vez: muestra la dirección con la IP de la computadora. En la computadora del trabajo, deja **no**: cualquiera en la red de la empresa vería la pantalla de entrada.
 
-Para usarlo desde cualquier lugar (internet), necesitas un servidor pequeño (VPS) y un dominio — es la sección "Subir com Docker" del README. Pídeselo a alguien técnico o abre un issue; para esa persona es media hora.
+## Enviar links al cliente
 
-## Comandos del día a día (en la misma terminal)
+El cliente necesita llegar a tu Nomade por internet. Dos caminos:
 
-| Quieres… | Escribe |
+1. **Un servidor pequeño (VPS)** con Docker: la sección "Subir num servidor com Docker" del README. Media hora para alguien técnico.
+2. **Un túnel hasta esta computadora** (Cloudflare Tunnel, ngrok y similares). Apunta el túnel a `http://localhost:5002` y pon la dirección que te dé en `config.env`: `BASE_URL=https://tu-tunel.ejemplo.com`. En la computadora del trabajo, pregunta antes a TI.
+
+## Comandos del día a día
+
+| Quieres… | Haz |
 |---|---|
-| Detener Nomade | `docker compose down` |
-| Encenderlo de nuevo | `docker compose up -d` |
-| Actualizar a una versión nueva | descarga el ZIP nuevo sobre la carpeta y ejecuta `bash instalar.sh` |
-| Ver qué está pasando | `docker compose logs -f` (Ctrl+C para salir) |
-| Cambiar la contraseña | abre `.env` en cualquier editor de texto, cambia `ADMIN_SENHA=`, guarda, ejecuta `bash instalar.sh` |
+| Encender | Doble clic en Nomade.command / Nomade.cmd |
+| Apagar | Cierra la ventana negra (o Ctrl+C en ella) |
+| Actualizar | Descarga el zip nuevo, descomprime y ábrelo. Los datos no están en esa carpeta, así que no se pierde nada. Puedes borrar la carpeta vieja |
+| Cambiar correo, contraseña, base o acceso por red | Mac/Linux: `./local/nomade.sh configurar` · Windows: en la barra de direcciones del Explorador, dentro de la carpeta, escribe `cmd` y Enter; en la ventana que se abre corre `Nomade.cmd configurar` |
+| Revisar qué funciona aquí | Lo mismo, con `diagnostico` en lugar de `configurar` |
+| Ver los logs | Carpeta `logs` dentro de la carpeta de datos |
+
+## Dónde están los datos
+
+Fuera de la carpeta de Nomade, en la carpeta de tu usuario:
+
+- **Windows:** `%LOCALAPPDATA%\NomadeBusiness` (pégalo en la barra del Explorador)
+- **Mac:** `~/Library/Application Support/NomadeBusiness` (Finder: Ir → Ir a la carpeta…)
+- **Linux:** `~/.local/share/nomade-business`
+
+Ahí están la base (`mongo`), los logs, el Node y la base descargados (`runtime`) y el `config.env` con tu configuración. Para empezar de cero, borra esa carpeta.
 
 ## Si algo sale mal
 
-- **"Docker no está abierto"** — abre Docker Desktop, espera la ballena y ejecuta el instalador otra vez.
-- **La página no abre** — espera un minuto más y recarga. ¿Nada? Ejecuta `docker compose logs -f`, busca una línea roja y pégala en un issue.
-- **"Puerto 5004 en uso"** — otro programa usa ese puerto. Edita `docker-compose.yml`, cambia `"5004:5004"` por `"5104:5004"` y abre `http://localhost:5104`.
-- **Perdiste la contraseña** — mira la tabla de arriba.
+- **"No se pudo descargar"** (Node o base): la red lo bloqueó. La ventana muestra el link: descárgalo en el navegador y pon el archivo en la carpeta que indica (o déjalo en Descargas), luego abre Nomade otra vez. Para la base también puedes usar una gratis de [MongoDB Atlas](https://www.mongodb.com/atlas): te pide el link.
+- **Windows: "falta el Visual C++"**: la base lo necesita. Pide a TI que instale "Microsoft Visual C++ Redistributable", o usa MongoDB Atlas.
+- **La página no abre:** espera un minuto y recarga. Si sigue sin abrir, mira la ventana negra; dice qué se detuvo y qué archivo de log enviar.
+- **"El puerto 5004 lo usa otro programa"**: no pasa nada, usa otro y muestra la dirección correcta.
+- **Olvidaste la contraseña:** corre `configurar` y elige otra.
 
-Tus datos viven en un volumen de Docker llamado `mongo-data`. Borrar la carpeta no borra tus datos; `docker compose down -v` sí.
+---
+
+## ¿Prefieres Docker?
+
+Si ya usas Docker (o lo vas a correr en un servidor), descarga el código (botón verde **Code** → **Download ZIP**), abre una terminal en la carpeta y corre `bash instalar.sh`. Hace las mismas cuatro preguntas y levanta todo con `docker compose`. Los datos quedan en el volumen `mongo-data`.

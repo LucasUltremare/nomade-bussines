@@ -1,0 +1,49 @@
+# Publica o zip pronto pra rodar no computador (sem Docker) na página de Releases.
+#
+#   git tag v0.2.0 && git push origin v0.2.0
+#
+# A versão do zip vem do package.json: suba ela junto com a tag.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Confere
+        run: |
+          npm ci --omit=optional --ignore-scripts --no-audit --no-fund
+          npm run check
+
+      - name: Monta o zip
+        run: node scripts/empacotar.mjs
+
+      - name: Publica
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" release/*.zip release/*.zip.sha256 \
+            --title "Nomade Business $GITHUB_REF_NAME" \
+            --generate-notes \
+            --notes-file docs/RELEASE-NOTES.md
+
+      - name: Guarda o zip (rodada manual)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nomade-business
+          path: release/*.zip

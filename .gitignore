@@ -7,6 +7,7 @@ config/time.json
 .DS_Store
 *.log
 .migracao/
+release/
 
 # modelo: dados de treino, pesos e resultados ficam locais
 modelo/treinar/dados/*

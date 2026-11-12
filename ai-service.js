@@ -19,6 +19,7 @@ import { carimbarEmpresa, colecaoDaEmpresa } from './lib/memoria-empresa.js'
 import { decidir, motorDisponivel } from './lib/decisoes.js'
 import { CATALOGO as INTEGRACOES, porId as integracaoPorId, mascarar as mascararIntegracao, mesclarConfig as mesclarIntegracao } from './lib/integracoes.js'
 import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { PROVEDORES, COM_CHAVE, provedor, publico as provPublico, listarModelos, MODELO_LIVRE } from './lib/provedores.js'
 import { CANAIS, canalPorId, CANAL_TESTE, MODOS as MODOS_ATEND, publico as publicoCanal } from './lib/atendimento/index.js'
 
@@ -4187,6 +4188,130 @@ app.post('/api/office/integracoes/:id/testar', officeAuth, limitTeste, async (re
 })
 
 /* ══════════════════════════════════════════════════════════════════════════
+ * AMBIENTE — o que funciona NESTA instalação, e por quê não
+ *
+ * Quem roda no computador do trabalho esbarra em coisas que não são bug:
+ * o cliente não abre um link de localhost, o Mercado Pago não consegue
+ * avisar um computador sem endereço público, a rede da empresa barra a API
+ * da IA ou troca o certificado HTTPS. Isto testa cada parte e devolve um
+ * código por item; o painel transforma em texto (i18n/mod/ambiente.js).
+ * estado: ok | aviso (funciona pela metade) | nao | off (não configurado)
+ * ══════════════════════════════════════════════════════════════════════════ */
+const requireCjs = createRequire(import.meta.url)
+const hostDe = (u) => { try { return new URL(u).hostname.replace(/^\[|\]$/g, '') } catch { return '' } }
+function alcanceDe(u) {
+  const h = hostDe(u)
+  if (!h || h === 'localhost' || h.endsWith('.localhost') || /^127\./.test(h) || h === '::1') return 'maquina'
+  if (/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/.test(h) || /\.(local|lan|internal|home)$/.test(h)) return 'rede'
+  return 'internet'
+}
+const publicoComHttps = (u) => alcanceDe(u) === 'internet' && /^https:\/\//i.test(u)
+
+/* Bate no host e diz se a rede deixa passar. Qualquer resposta HTTP conta
+   (401 sem chave é a API respondendo), menos a página de bloqueio de um
+   filtro corporativo: 403/451 em HTML. */
+async function alcanca(url) {
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(7000), redirect: 'manual' })
+    if (r.status === 407) return 'proxy_senha'
+    if ([403, 451].includes(r.status) && /html/i.test(r.headers.get('content-type') || '')) return 'filtro'
+    return null
+  } catch (e) {
+    const c = String(e?.cause?.code || e?.code || '')
+    const m = String(e?.cause?.message || e?.message || '')
+    if (e?.name === 'TimeoutError' || /TIMEOUT|ETIMEDOUT/.test(c)) return 'lento'
+    if (c === 'ENOTFOUND' || c === 'EAI_AGAIN') return 'dns'
+    if (/CERT|SELF_SIGNED|UNABLE_TO_(GET|VERIFY)|ERR_TLS/i.test(c + ' ' + m)) return 'certificado'
+    return 'bloqueado'
+  }
+}
+
+async function tokenMercadoPago() {
+  try {
+    const d = await db.collection('office_integracoes').findOne({ id: 'mercadopago' })
+    if (d?.config?.token) return d.config.token
+  } catch { /* sem banco */ }
+  return process.env.MP_ACCESS_TOKEN || ''
+}
+
+async function checarAmbiente() {
+  const itens = []
+  const add = (id, estado, motivo, extra = {}) => itens.push({ id, estado, motivo, ...extra })
+  const local = process.env.NOMADE_LOCAL === '1'
+
+  // quem abre o painel
+  const aPainel = alcanceDe(PAINEL_URL)
+  if (aPainel === 'internet') add('acesso', /^https:/i.test(PAINEL_URL) ? 'ok' : 'aviso', /^https:/i.test(PAINEL_URL) ? 'ok' : 'sem_https', { url: PAINEL_URL })
+  else add('acesso', 'aviso', aPainel, { url: PAINEL_URL })
+
+  // o que o cliente final abre: proposta, pagamento, cadastro
+  const aPublico = alcanceDe(URL_PUBLICA)
+  if (aPublico === 'internet') add('links', /^https:/i.test(URL_PUBLICA) ? 'ok' : 'aviso', /^https:/i.test(URL_PUBLICA) ? 'ok' : 'sem_https', { url: URL_PUBLICA })
+  else add('links', aPublico === 'maquina' ? 'nao' : 'aviso', aPublico, { url: URL_PUBLICA })
+
+  if (local) add('ligado', 'aviso', 'local')
+
+  // os testes de rede rodam juntos: cada um espera no máximo 7s
+  const keys = await getKeys()
+  const orq = await getOrqConfig()
+  const p = orq.provider === 'ollama' ? null : provedor(orq.provider)
+  const mp = await tokenMercadoPago()
+  const resend = process.env.RESEND_API_KEY || ''
+  let canais = 0
+  try { canais = await canaisCol().countDocuments({ id: { $ne: CANAL_TESTE } }) } catch { /* sem banco */ }
+
+  const [rIa, rOllama, rMp, rResend] = await Promise.all([
+    p && keys[p.id] ? alcanca(`${p.base}/models`) : null,
+    OLLAMA_URL ? alcanca(`${OLLAMA_URL}/api/tags`) : 'off',
+    mp ? alcanca('https://api.mercadopago.com/users/me') : null,
+    resend ? alcanca('https://api.resend.com/domains') : null,
+  ])
+
+  // IA: a que o chat e os agents usam agora
+  if (orq.provider === 'ollama') {
+    add('ia', rOllama ? 'nao' : 'ok', rOllama ? 'ollama_off' : 'ok', { provedor: 'Ollama', url: OLLAMA_URL })
+  } else if (!p || !keys[p.id]) {
+    const outra = PROVEDORES.find(x => keys[x.id])
+    add('ia', 'nao', outra ? 'outra_chave' : 'sem_chave', { provedor: p?.produto || orq.provider, outra: outra?.produto })
+  } else {
+    add('ia', rIa ? 'nao' : 'ok', rIa || 'ok', { provedor: p.produto, host: hostDe(p.base) })
+  }
+
+  // memória: com modelo local acha por significado; sem, por palavra
+  add('memoria', rOllama ? 'aviso' : 'ok', rOllama ? 'texto' : 'semantica')
+
+  // pagamentos: o link sai, mas o aviso de "pago" precisa chegar aqui
+  if (!mp) add('pagamentos', 'off', 'off')
+  else if (rMp) add('pagamentos', 'nao', rMp, { host: 'api.mercadopago.com' })
+  else if (!publicoComHttps(URL_PUBLICA)) add('pagamentos', 'aviso', 'webhook')
+  else add('pagamentos', 'ok', 'ok')
+
+  if (!resend) add('email', 'off', 'off')
+  else add('email', rResend ? 'nao' : 'ok', rResend || 'ok', { host: 'api.resend.com' })
+
+  // atendimento: Mercado Livre e Shopee devolvem o login pra um endereço público
+  add('atendimento', publicoComHttps(PAINEL_URL) ? 'ok' : 'aviso', publicoComHttps(PAINEL_URL) ? 'ok' : 'https', { canais })
+
+  // capa dos projetos: precisa de um Chrome, Chromium ou Edge na máquina
+  let navegador = null
+  try { navegador = requireCjs('./lib/screenshot.js').acharChromium() } catch { /* sem puppeteer */ }
+  add('print', navegador ? 'ok' : 'aviso', navegador ? 'ok' : 'sem', { navegador: navegador ? path.basename(navegador).replace(/\.exe$/i, '') : null })
+
+  const proxy = process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROXY || process.env.http_proxy || ''
+  return { local, proxy: !!proxy, itens, em: new Date() }
+}
+
+let ambienteCache = null
+app.get('/api/office/ambiente', officeAuth, async (req, res) => {
+  try {
+    if (!ambienteCache || req.query.refazer || Date.now() - ambienteCache.t > 60_000) {
+      ambienteCache = { t: Date.now(), r: await checarAmbiente() }
+    }
+    res.json(ambienteCache.r)
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+/* ══════════════════════════════════════════════════════════════════════════
  * CLI — o que o painel sabe sobre o `nomade` instalado nas máquinas
  * ══════════════════════════════════════════════════════════════════════════ */
 let cliInfoCache = null
@@ -5423,7 +5548,10 @@ app.get('*', (req, res, next) => {
 })
 
 connectDB().then(() => {
-  server.listen(PORT, () => console.log(`AI Service running on port ${PORT}`))
+  const aoSubir = () => console.log(`AI Service running on port ${PORT}`)
+  // BIND_HOST: mesmo esquema do server.js (vazio = todas as interfaces)
+  if (process.env.BIND_HOST) server.listen(PORT, process.env.BIND_HOST, aoSubir)
+  else server.listen(PORT, aoSubir)
   // worker: só age em squad marcado "roda no servidor" (default: nenhum)
   if (process.env.WORKER_DESLIGADO !== '1') {
     setInterval(() => { cicloWorker().catch(() => {}) }, WORKER_MS)

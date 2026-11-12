@@ -5,6 +5,7 @@ import { Icon } from "../../components/Icon.jsx";
 import { RegiaoEditor } from "../settings/Regiao.jsx";
 import { TelasEditor } from "../settings/Telas.jsx";
 import { LAYOUTS } from "../../lib/telas.js";
+import { AmbienteLista, buscarAmbiente } from "../settings/Ambiente.jsx";
 import "./onboarding.css";
 
 /* ══════════════════════════════════════════════════════════
@@ -15,10 +16,15 @@ import "./onboarding.css";
 
 /* A ordem. "link" e "connect" só aparecem se a empresa ligou as telas a que
    eles servem (Leads; conversa, agentes e máquinas). */
-const TODOS = ["lang", "company", "region", "screens", "hours", "link", "team", "connect", "done"];
+/* "machine" (o que funciona neste computador) só entra quando a instalação é
+   local: é aí que o cliente não abre o link, o webhook não chega etc. */
+const TODOS = ["lang", "company", "region", "screens", "hours", "link", "team", "connect", "machine", "done"];
 const DE_IA = ["chat", "runner", "memoria", "integrations"];
-const passosPara = (modulos) => TODOS.filter((p) =>
-  p === "link" ? modulos.includes("leads") : p === "connect" ? modulos.some((m) => DE_IA.includes(m)) : true);
+const passosPara = (modulos, local) => TODOS.filter((p) =>
+  p === "link" ? modulos.includes("leads")
+    : p === "connect" ? modulos.some((m) => DE_IA.includes(m))
+      : p === "machine" ? local
+        : true);
 const CAMPOS = ["name", "email", "whatsapp", "company", "msg"];
 const PERMS_PADRAO = ["kanban", "clients", "propostas", "leads", "projetos"];
 
@@ -42,7 +48,9 @@ export function Onboarding({ empresa, onDone }) {
     // primeira vez: o fuso do computador de quem está configurando é o melhor palpite
     fuso: empresa?.onboarding?.passo ? empresa.fuso : (Intl.DateTimeFormat().resolvedOptions().timeZone || empresa?.fuso || "UTC"),
   }));
-  const PASSOS = passosPara(cfg.modulos);
+  const [local, setLocal] = useState(false);
+  useEffect(() => { buscarAmbiente().then((a) => a?.local && setLocal(true)); }, []);
+  const PASSOS = passosPara(cfg.modulos, local);
   const [passo, setPasso] = useState(() => Math.min(PASSOS.length - 2, empresa?.onboarding?.passo || 0));
   const set = (k, v) => setCfg((c) => ({ ...c, [k]: v }));
 
@@ -144,6 +152,14 @@ export function Onboarding({ empresa, onDone }) {
           {id === "link" && <PassoLink />}
           {id === "team" && <PassoTime />}
           {id === "connect" && <PassoConectar />}
+
+          {id === "machine" && (
+            <>
+              <h1 className="ob__title">{t("ob.machine.title")}</h1>
+              <p className="ob__sub">{t("ob.machine.sub")}</p>
+              <AmbienteLista />
+            </>
+          )}
 
           {id === "done" && (
             <div className="ob__done">
@@ -342,7 +358,7 @@ function PassoConectar() {
           <input type="password" value={chave} onChange={(e) => setChave(e.target.value)} placeholder={p?.prefixo || "sk-…"} autoComplete="off" />
           <button className="ob__btn ob__btn--primary" onClick={salvarChave} disabled={voando || !chave.trim()}>{t("int.save")}</button>
         </div>
-        {p?.site && <a className="ob__keylink" href={p.site} target="_blank" rel="noreferrer">{t("int.ai.get_key")} · {p.nome} ↗</a>}
+        {p?.site && <a className="ob__keylink" href={p.site} target="_blank" rel="noreferrer">{t("int.ai.get_key")} · {p.nome} <Icon name="external" size={12} /></a>}
         <label className="ob__f"><span>{t("ob.connect.model")}</span>
           <input list="ob-modelos" value={modelo} onChange={(e) => escolherModelo(e.target.value)} spellCheck="false" />
           <datalist id="ob-modelos">{modelos.map((m) => <option key={m} value={m} />)}</datalist>

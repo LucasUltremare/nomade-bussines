@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# lançadores: o cmd do Windows quebra com LF; os scripts de Mac/Linux, com CRLF
+*.cmd text eol=crlf
+*.sh text eol=lf
+*.command text eol=lf
